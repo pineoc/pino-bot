@@ -1,8 +1,15 @@
 {
+  "httpHost": "https://pineoc.com",
   "host": "pineoc.com",
   "basic_auth": {
     "username": "pineoc",
     "password": "1234"
   },
-  "basicAuthBase64": "U2lyVXNlck9mTmFtZTpQYXNzd29yZDEyMw=="
+  "basicAuthBase64": "U2lyVXNlck9mTmFtZTpQYXNzd29yZDEyMw==",
+  "ticketColors": {
+    "Task": "#4BADE8",
+    "Bug": "#E5493A",
+    "Epic": "#904EE2",
+    "Suggestion": "#FF9C23"
+  }
 }
