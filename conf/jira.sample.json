@@ -1,0 +1,8 @@
+{
+  "host": "pineoc.com",
+  "basic_auth": {
+    "username": "pineoc",
+    "password": "1234"
+  },
+  "basicAuthBase64": "U2lyVXNlck9mTmFtZTpQYXNzd29yZDEyMw=="
+}
