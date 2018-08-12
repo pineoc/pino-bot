@@ -15,10 +15,10 @@ const conversationId = slackConfig.testChannelID;
 router.get('/hello', function (req, res, next) {
   // See: https://api.slack.com/methods/chat.postMessage
   web.chat.postMessage({ channel: conversationId, text: 'Hello there' })
-    .then((res) => {
+    .then((result) => {
       // `res` contains information about the posted message
-      console.log('Message sent: ', res.ts);
-      res.send(res);
+      console.log('Message sent: ', result.ts);
+      res.send(result);
     })
     .catch((err) => {
       console.error(err);
