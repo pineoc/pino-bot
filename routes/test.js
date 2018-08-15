@@ -2,32 +2,21 @@ var express = require('express');
 var router = express.Router();
 const { WebClient } = require('@slack/client');
 const slackConfig = require('../conf/slack.json');
+const slackService = require('./slackService');
 const jiraConfig = require('../conf/jira.json');
 const jiraService = require('./jiraService');
-
-// An access token (from your Slack app or custom integration - xoxp, xoxb, or xoxa)
-const token = slackConfig.slackToken;
-const web = new WebClient(token);
 
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
 const conversationId = slackConfig.testChannelID;
 
 router.get('/hello', function (req, res, next) {
-  // See: https://api.slack.com/methods/chat.postMessage
-  web.chat.postMessage({ channel: conversationId, text: 'Hello there' })
-    .then((result) => {
-      // `res` contains information about the posted message
-      console.log('Message sent: ', result.ts);
-      res.send(result);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.send(err);
-    });
+  slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, function (result) {
+    res.send(result);
+  });
 });
 
 router.get('/attachment', (req, res, next) => {
-  const msg = {
+  const msgObj = {
     channel: conversationId,
     text: 'Hello there',
     attachments: [
@@ -66,22 +55,15 @@ router.get('/attachment', (req, res, next) => {
     ]
   };
 
-  web.chat.postMessage(msg)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.send(err);
-    });
+  slackService.sendMessage(msgObj, function (result) {
+    res.send(result);
+  });
 });
 
 router.get('/jira-get-issue/:issueKey', (req, res, next) => {
   const issueKey = req.params.issueKey;
 
   jiraService.getIssueByKey(issueKey, (data) => {
-    // console.log(data);
-    // console.log(data.fields.issuetype.iconUrl);
     var issueData = {
       key: data.key,
       project: data.fields.project,
@@ -123,7 +105,7 @@ router.get('/jira-issue-slack/:issueKey', (req, res, next) => {
       reporter: data.fields.reporter.displayName,
       assignee: data.fields.assignee
     };
-    const msg = {
+    const msgObj = {
       channel: conversationId,
       attachments: [
         {
@@ -159,14 +141,9 @@ router.get('/jira-issue-slack/:issueKey', (req, res, next) => {
         }
       ]
     };
-    web.chat.postMessage(msg)
-      .then((result) => {
-        res.send(result);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.send(err);
-      });
+    slackService.sendMessage(msgObj, function (result) {
+      res.send(result);
+    });
   });
 });
 
