@@ -31,5 +31,11 @@ describe('slackService module test', function () {
         assert.equal(res[0], 'PRO-1111');
       });
     });
+    it('Should get jira ticket on URL', function () {
+      slackService.checkText('Good! https://example.com/browse/PRO-11296 PRO-1111', (res) => {
+        assert.equal(res.length, 2);
+        assert.equal(res[0], 'PRO-11296');
+      });
+    });
   });
 });

@@ -17,4 +17,4 @@ module.exports.getIssueByKey = function (issueKey, cb) {
       cb(issue);
     }
   });
-}
+};

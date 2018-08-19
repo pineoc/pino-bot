@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const { WebClient } = require('@slack/client');
 const slackConfig = require('../conf/slack.json');
 const slackService = require('./slackService');
 const jiraConfig = require('../conf/jira.json');
@@ -9,48 +8,48 @@ const jiraService = require('./jiraService');
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
 const conversationId = slackConfig.testChannelID;
 
-router.get('/hello', (req, res, next) => {
+router.get('/hello', (req, res) => {
   slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, (result) => {
     res.send(result);
   });
 });
 
-router.get('/attachment', (req, res, next) => {
+router.get('/attachment', (req, res) => {
   const msgObj = {
     channel: conversationId,
     text: 'Hello there',
     attachments: [
       {
-        "text": "And here’s an attachment!",
-        "color": "#2eb886"
+        'text': 'And here’s an attachment!',
+        'color': '#2eb886'
       }, {
-        "fallback": "Required plain-text summary of the attachment.",
-        "color": "danger",
-        "pretext": "Optional text that appears above the attachment block",
-        "author_link": "http://flickr.com/bobby/",
-        "title": "Slack API Documentation",
-        "title_link": "https://api.slack.com/",
-        "text": "Optional text that appears within the attachment",
-        "fields": [
+        'fallback': 'Required plain-text summary of the attachment.',
+        'color': 'danger',
+        'pretext': 'Optional text that appears above the attachment block',
+        'author_link': 'http://flickr.com/bobby/',
+        'title': 'Slack API Documentation',
+        'title_link': 'https://api.slack.com/',
+        'text': 'Optional text that appears within the attachment',
+        'fields': [
           {
-            "title": "Priority",
-            "value": "Major",
-            "short": true
+            'title': 'Priority',
+            'value': 'Major',
+            'short': true
           }, {
-            "title": "Name",
-            "value": "High",
-            "short": true
+            'title': 'Name',
+            'value': 'High',
+            'short': true
           }, {
-            "title": "reproduce",
-            "value": "1~10%",
-            "short": false
+            'title': 'reproduce',
+            'value': '1~10%',
+            'short': false
           }
         ],
-        "image_url": "http://my-website.com/path/to/image.jpg",
-        "thumb_url": "https://platform.slack-edge.com/img/default_application_icon.png",
-        "footer": "Slack API",
-        "footer_icon": "https://platform.slack-edge.com/img/default_application_icon.png",
-        "ts": Date.now()
+        'image_url': 'http://my-website.com/path/to/image.jpg',
+        'thumb_url': 'https://platform.slack-edge.com/img/default_application_icon.png',
+        'footer': 'Slack API',
+        'footer_icon': 'https://platform.slack-edge.com/img/default_application_icon.png',
+        'ts': Date.now()
       }
     ]
   };
@@ -60,7 +59,7 @@ router.get('/attachment', (req, res, next) => {
   });
 });
 
-router.get('/jira-get-issue/:issueKey', (req, res, next) => {
+router.get('/jira-get-issue/:issueKey', (req, res) => {
   const issueKey = req.params.issueKey;
 
   jiraService.getIssueByKey(issueKey, (data) => {
@@ -84,7 +83,7 @@ router.get('/jira-get-issue/:issueKey', (req, res, next) => {
   });
 });
 
-router.get('/jira-issue-slack/:issueKey', (req, res, next) => {
+router.get('/jira-issue-slack/:issueKey', (req, res) => {
   const issueKey = req.params.issueKey;
   jiraService.getIssueByKey(issueKey, (data) => {
     // data parsing
@@ -109,35 +108,35 @@ router.get('/jira-issue-slack/:issueKey', (req, res, next) => {
       channel: conversationId,
       attachments: [
         {
-          "author_name": issueData.issueTypeName,
-          "fallback": `[${issueData.key}] ${issueData.summary}`,
-          "color": jiraConfig.ticketColors[issueData.issueTypeName],
-          "title": `[${issueData.key}] ${issueData.summary}`,
-          "title_link": issueData.issueLink,
-          "fields": [
+          'author_name': issueData.issueTypeName,
+          'fallback': `[${issueData.key}] ${issueData.summary}`,
+          'color': jiraConfig.ticketColors[issueData.issueTypeName],
+          'title': `[${issueData.key}] ${issueData.summary}`,
+          'title_link': issueData.issueLink,
+          'fields': [
             {
-              "title": "Priority",
-              "value": issueData.priority,
-              "short": true
+              'title': 'Priority',
+              'value': issueData.priority,
+              'short': true
             }, {
-              "title": "Status",
-              "value": issueData.status,
-              "short": true
+              'title': 'Status',
+              'value': issueData.status,
+              'short': true
             }, {
-              "title": "Assignee",
-              "value": issueData.assignee.displayName,
-              "short": true
+              'title': 'Assignee',
+              'value': issueData.assignee.displayName,
+              'short': true
             }, {
-              "title": "Reporter",
-              "value": issueData.reporter,
-              "short": true
+              'title': 'Reporter',
+              'value': issueData.reporter,
+              'short': true
             }, {
-              "title": "Created",
-              "value": issueData.created,
-              "short": false
+              'title': 'Created',
+              'value': issueData.created,
+              'short': false
             }
           ],
-          "footer": "JIRA & SLACK"
+          'footer': 'JIRA & SLACK'
         }
       ]
     };
