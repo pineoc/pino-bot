@@ -7,9 +7,6 @@ const slackEvents = createEventAdapter(slackConfig.signingSecret);
 const token = slackConfig.slackToken;
 const web = new WebClient(token);
 
-// This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
-const conversationId = slackConfig.testChannelID;
-
 const checkText = function (text, cb) {
   // Ref: https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
   const jiraMatcher = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
@@ -17,12 +14,10 @@ const checkText = function (text, cb) {
   if (t != null && t.length > 0) {
     // jira ticket string in text
     cb(t);
-  } else if (text === '안녕') {
+  }
+  if (text === '안녕') {
     // test text
     cb('test');
-  } else {
-    // default messaging
-    cb('default');
   }
 };
 // export for test
@@ -36,10 +31,6 @@ slackEvents.on('message', (event) => {
   checkText(event.text, (result) => {
     if (result === 'test') {
       sendMessage ({channel: event.channel, text: '만나서 반가워!'}, function (res){
-        console.log(res);
-      });
-    } else if (result === 'default'){
-      sendMessage ({channel: event.channel, text: `반사! ${event.text}`}, function (res){
         console.log(res);
       });
     } else {
