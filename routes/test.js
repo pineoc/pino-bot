@@ -9,8 +9,8 @@ const jiraService = require('./jiraService');
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
 const conversationId = slackConfig.testChannelID;
 
-router.get('/hello', function (req, res, next) {
-  slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, function (result) {
+router.get('/hello', (req, res, next) => {
+  slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, (result) => {
     res.send(result);
   });
 });
@@ -55,7 +55,7 @@ router.get('/attachment', (req, res, next) => {
     ]
   };
 
-  slackService.sendMessage(msgObj, function (result) {
+  slackService.sendMessage(msgObj, (result) => {
     res.send(result);
   });
 });
@@ -141,7 +141,7 @@ router.get('/jira-issue-slack/:issueKey', (req, res, next) => {
         }
       ]
     };
-    slackService.sendMessage(msgObj, function (result) {
+    slackService.sendMessage(msgObj, (result) => {
       res.send(result);
     });
   });
