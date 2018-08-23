@@ -1,14 +1,6 @@
 var assert = require('assert');
 var slackService = require('../routes/slackService');
-
-// test sample
-describe('Array', function() {
-  describe('#indexOf()', function() {
-    it('should return -1 when the value is not present', function() {
-      assert.equal([1,2,3].indexOf(4), -1);
-    });
-  });
-});
+var jiraService = require('../routes/jiraService');
 
 describe('slackService module test', function () {
   describe('checkText() success test', function () {
@@ -35,6 +27,35 @@ describe('slackService module test', function () {
       slackService.checkText('Good! https://example.com/browse/PRO-11296 PRO-1111', (res) => {
         assert.equal(res.length, 2);
         assert.equal(res[0], 'PRO-11296');
+      });
+    });
+  });
+});
+
+describe('jiraService module test', function () {
+  describe('getIssueByKey() test', function () {
+    const key = 'BRO-1234';
+    it('Should get JIRA issue data fields not null', function () {
+      jiraService.getIssueByKey(key, function (res) {
+        assert.notEqual(res.fields, null);
+      });
+    });
+    it('Should get JIRA issue data fields null', function () {
+      jiraService.getIssueByKey('BRO1-1234', function (res) {
+        assert.notEqual(res.fields, null);
+      });
+    });
+  });
+  describe('getIssueByKeyFiltered() test', function () {
+    const key = 'BRO-1234';
+    it('Should get JIRA issue data fields not null', function () {
+      jiraService.getIssueByKeyFiltered(key, function (res) {
+        assert.notEqual(res.key, null);
+      });
+    });
+    it('Should get JIRA issue data fields null', function () {
+      jiraService.getIssueByKeyFiltered('BRO1-1234', function (res) {
+        assert.notEqual(res.key, null);
       });
     });
   });

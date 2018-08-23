@@ -85,54 +85,36 @@ router.get('/jira-get-issue/:issueKey', (req, res) => {
 
 router.get('/jira-issue-slack/:issueKey', (req, res) => {
   const issueKey = req.params.issueKey;
-  jiraService.getIssueByKey(issueKey, (data) => {
-    // data parsing
-    let issueData = {
-      key: data.key,
-      project: data.fields.project,
-      issueLink: `${jiraConfig.httpHost}/browse/${issueKey}`,
-      issueTypeName: data.fields.issuetype.name,
-      issueTypeObj: data.fields.issuetype,
-      summary: data.fields.summary,
-      description: data.fields.description,
-      priority: data.fields.priority.name,
-      Severity: data.fields.customfield_10503,
-      status: data.fields.status.name,
-      fixVersion: data.fields.fixVersions,
-      created: data.fields.created,
-      creator: data.fields.creator.displayName,
-      reporter: data.fields.reporter.displayName,
-      assignee: data.fields.assignee
-    };
+  jiraService.getIssueByKeyFiltered(issueKey, (data) => {
     const msgObj = {
       channel: conversationId,
       attachments: [
         {
-          'author_name': issueData.issueTypeName,
-          'fallback': `[${issueData.key}] ${issueData.summary}`,
-          'color': jiraConfig.ticketColors[issueData.issueTypeName],
-          'title': `[${issueData.key}] ${issueData.summary}`,
-          'title_link': issueData.issueLink,
+          'author_name': data.issueTypeName,
+          'fallback': `[${data.key}] ${data.summary}`,
+          'color': data.issueColor,
+          'title': `[${data.key}] ${data.summary}`,
+          'title_link': data.issueLink,
           'fields': [
             {
               'title': 'Priority',
-              'value': issueData.priority,
+              'value': data.priority,
               'short': true
             }, {
               'title': 'Status',
-              'value': issueData.status,
+              'value': data.status,
               'short': true
             }, {
               'title': 'Assignee',
-              'value': issueData.assignee.displayName,
+              'value': data.assignee.displayName,
               'short': true
             }, {
               'title': 'Reporter',
-              'value': issueData.reporter,
+              'value': data.reporter,
               'short': true
             }, {
               'title': 'Created',
-              'value': issueData.created,
+              'value': data.created,
               'short': false
             }
           ],

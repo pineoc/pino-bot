@@ -4,8 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-const slackService = require('./routes/slackService');
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var slackRouter = require('./routes/slack');
@@ -17,7 +15,8 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use('/slack/events', slackService.slackEvents.expressMiddleware());
+app.use('/slack', slackRouter); // for slack events api init
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -26,7 +25,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/slack', slackRouter);
 app.use('/test', testRouter);
 
 // catch 404 and forward to error handler
@@ -35,13 +33,12 @@ app.use(function(req, res, next) {
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  console.log(err);
   res.status(err.status || 500);
   res.render('error');
 });

@@ -22,33 +22,6 @@ const checkText = function (text, cb) {
 };
 // export for test
 module.exports.checkText = checkText;
-
-slackEvents.on('message', (event) => {
-  console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
-  if (event.user === undefined)
-    return;
-  
-  checkText(event.text, (result) => {
-    if (result === 'test') {
-      sendMessage ({channel: event.channel, text: '만나서 반가워!'}, function (res){
-        console.log(res);
-      });
-    } else {
-      let message = {
-        channel: event.channel,
-        text: 'JIRA Report',
-        attachments: []
-      };
-      result.forEach(element => {
-        message.attachments.push({text: element, color: '#2eb886'});
-      });
-      sendMessage (message, function (res){
-        console.log(res);
-      });
-    }
-  });
-});
-slackEvents.on('error', console.error);
 module.exports.slackEvents = slackEvents;
 
 // send Message to slack channel
@@ -57,7 +30,6 @@ const sendMessage = function (messageObj, cb) {
   web.chat.postMessage(messageObj)
     .then((result) => {
       // `res` contains information about the posted message
-      console.log('Message sent: ', result.ts);
       cb(result);
     })
     .catch((err) => {
@@ -65,5 +37,40 @@ const sendMessage = function (messageObj, cb) {
       cb(err);
     });
 };
-
 module.exports.sendMessage = sendMessage;
+
+const makeAttachment = function (data, cb) {
+  const attachment = {
+    'author_name': data.issueTypeName,
+    'fallback': `[${data.key}] ${data.summary}`,
+    'color': data.issueColor,
+    'title': `[${data.key}] ${data.summary}`,
+    'title_link': data.issueLink,
+    'fields': [
+      {
+        'title': 'Priority',
+        'value': data.priority,
+        'short': true
+      }, {
+        'title': 'Status',
+        'value': data.status,
+        'short': true
+      }, {
+        'title': 'Assignee',
+        'value': data.assignee.displayName,
+        'short': true
+      }, {
+        'title': 'Reporter',
+        'value': data.reporter,
+        'short': true
+      }, {
+        'title': 'Created',
+        'value': data.created,
+        'short': false
+      }
+    ],
+    'footer': 'JIRA & SLACK'
+  };
+  cb(attachment);
+};
+module.exports.makeAttachment = makeAttachment;
