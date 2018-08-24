@@ -57,7 +57,7 @@ const makeAttachment = function (data, cb) {
         'short': true
       }, {
         'title': 'Assignee',
-        'value': data.assignee.displayName,
+        'value': data.assignee,
         'short': true
       }, {
         'title': 'Reporter',

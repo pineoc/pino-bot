@@ -43,7 +43,7 @@ const getIssueByKeyFiltered = function (issueKey, cb) {
       created: res.fields.created,
       creator: res.fields.creator.displayName,
       reporter: res.fields.reporter.displayName,
-      assignee: res.fields.assignee
+      assignee: res.fields.assignee === null ? 'Unassigned' : res.fields.assignee.displayName
     };
     cb(filteredData);
   });
