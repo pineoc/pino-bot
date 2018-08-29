@@ -42,7 +42,7 @@ describe('jiraService module test', function () {
     });
     it('Should get JIRA issue data fields null', function () {
       jiraService.getIssueByKey('BRO1-1234', function (res) {
-        assert.notEqual(res.fields, null);
+        assert.equal(res.fields, null);
       });
     });
   });
@@ -55,7 +55,12 @@ describe('jiraService module test', function () {
     });
     it('Should get JIRA issue data fields null', function () {
       jiraService.getIssueByKeyFiltered('BRO1-1234', function (res) {
-        assert.notEqual(res.key, null);
+        assert.equal(res.key, null);
+      });
+    });
+    it('Should get JIRA issue data fields fix Version', function () {
+      jiraService.getIssueByKeyFiltered('BRO-11234', function (res) {
+        assert.notEqual(res.fixVersion, null);
       });
     });
   });

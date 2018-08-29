@@ -64,8 +64,8 @@ const makeAttachment = function (data, cb) {
         'value': data.reporter,
         'short': true
       }, {
-        'title': 'Created',
-        'value': data.created,
+        'title': 'Fix Version',
+        'value': data.fixVersion.join(),
         'short': false
       }
     ],

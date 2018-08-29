@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var createError = require('http-errors');
 const slackConfig = require('../conf/slack.json');
 const slackService = require('./slackService');
 const jiraConfig = require('../conf/jira.json');
@@ -59,10 +60,14 @@ router.get('/attachment', (req, res) => {
   });
 });
 
-router.get('/jira-get-issue/:issueKey', (req, res) => {
+router.get('/jira-get-issue/:issueKey', (req, res, next) => {
   const issueKey = req.params.issueKey;
 
   jiraService.getIssueByKey(issueKey, (data) => {
+    if (data.errorMessages) {
+      next(createError(500));
+      return;
+    }
     var issueData = {
       key: data.key,
       project: data.fields.project,
@@ -73,13 +78,27 @@ router.get('/jira-get-issue/:issueKey', (req, res) => {
       priority: data.fields.priority.name,
       Severity: data.fields.customfield_10503,
       status: data.fields.status.name,
-      fixVersion: data.fields.fixVersions,
+      fixVersion: data.fields.fixVersions.map(v => v.name).join(),
       created: data.fields.created,
       creator: data.fields.creator.displayName,
       reporter: data.fields.reporter.displayName,
       assignee: data.fields.assignee,
     };
     res.json(issueData);
+  });
+});
+
+router.get('/jira-get-issue-f/:issueKey', (req, res, next) => {
+  const issueKey = req.params.issueKey;
+
+  jiraService.getIssueByKeyFiltered(issueKey, (data) => {
+    if (data.errorMessages) {
+      next(createError(500));
+      return;
+    }
+    slackService.makeAttachment(data, (attData) => {
+      res.json(attData);
+    });
   });
 });
 
