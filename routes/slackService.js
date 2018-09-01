@@ -7,7 +7,7 @@ const slackEvents = createEventAdapter(slackConfig.signingSecret);
 const token = slackConfig.slackToken;
 const web = new WebClient(token);
 
-const checkText = function (text, cb) {
+const checkTextForJiraTicket = function (text, cb) {
   // Ref: https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
   const jiraMatcher = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
   let t = text.match(jiraMatcher);
@@ -15,32 +15,31 @@ const checkText = function (text, cb) {
     // jira ticket string in text
     cb(t);
   }
-  if (text === '안녕') {
-    // test text
-    cb('test');
-  }
 };
 // export for test
-module.exports.checkText = checkText;
+module.exports.checkTextForJiraTicket = checkTextForJiraTicket;
 module.exports.slackEvents = slackEvents;
 
 // send Message to slack channel
-const sendMessage = function (messageObj, cb) {
+const sendMessage = function (msgObj, cb) {
   // See: https://api.slack.com/methods/chat.postMessage
-  web.chat.postMessage(messageObj)
+  web.chat.postMessage(msgObj)
     .then((result) => {
-      // `res` contains information about the posted message
-      cb(result);
+      if(cb) cb(result);
     })
     .catch((err) => {
-      console.error(err);
-      cb(err);
+      if(cb) cb(err);
     });
 };
 module.exports.sendMessage = sendMessage;
 
 const makeAttachment = function (data, cb) {
-  const attachment = {
+  let attachment;
+  if (data.errorMessages) {
+    attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
+    return cb(attachment);
+  }
+  attachment = {
     'author_name': data.issueTypeName,
     'fallback': `[${data.key}] ${data.summary}`,
     'color': data.issueColor,

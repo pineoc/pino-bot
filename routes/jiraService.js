@@ -23,9 +23,7 @@ module.exports.getIssueByKey = getIssueByKey;
 const getIssueByKeyFiltered = function (issueKey, cb) {
   getIssueByKey(issueKey, (res) => {
     if (res.errorMessages) {
-      console.log('get data error', res);
-      cb(res);
-      return;
+      return cb(res);
     }
     // data filtered
     const fixVersionsName = res.fields.fixVersions.map(v => v.name);
