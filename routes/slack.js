@@ -9,7 +9,7 @@ router.get('/', function (req, res) {
 
 router.use('/events', slackService.slackEvents.expressMiddleware());
 slackService.slackEvents.on('message', (event) => {
-  // console.log(`Received a message event: user ${event.user} in channel ${event.channel} says ${event.text}`);
+  // slack bot events
   if (event.user === undefined)
     return;
 
