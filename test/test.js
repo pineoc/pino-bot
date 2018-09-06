@@ -34,31 +34,36 @@ describe('slackService module test', function () {
 
 describe('jiraService module test', function () {
   describe('getIssueByKey() test', function () {
-    it('Should get JIRA issue data fields not null', function () {
+    it('Should get JIRA issue data fields not null', function (done) {
       jiraService.getIssueByKey('BRO-1234', function (res) {
         assert.notEqual(res.fields, null);
+        done();
       });
     });
-    it('Should get JIRA issue data fields undefined', function () {
+    it('Should not get JIRA issue data. fields undefined', function (done) {
       jiraService.getIssueByKey('BRO1-1234', function (res) {
         assert.equal(res.fields, undefined);
+        done();
       });
     });
   });
   describe('getIssueByKeyFiltered() test', function () {
-    it('Should get JIRA issue key not null', function () {
+    it('Should get JIRA issue key is same', function (done) {
       jiraService.getIssueByKeyFiltered('BRO-1234', function (res) {
-        assert.notEqual(res.key, null);
+        assert.equal(res.key, 'BRO-1234');
+        done();
       });
     });
-    it('Should get JIRA issue key undefined', function () {
+    it('Should not get JIRA issue. key undefined', function (done) {
       jiraService.getIssueByKeyFiltered('BRO1-1234', function (res) {
         assert.equal(res.key, undefined);
+        done();
       });
     });
-    it('Should get JIRA issue data fields fix Version', function () {
+    it('Should get JIRA issue data fields fix Version', function (done) {
       jiraService.getIssueByKeyFiltered('BRO-11234', function (res) {
         assert.notEqual(res.fixVersion, null);
+        done();
       });
     });
   });
