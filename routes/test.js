@@ -147,4 +147,15 @@ router.get('/jira-issue-slack/:issueKey', (req, res) => {
   });
 });
 
+router.post('/jira-webhooks', (req, res) => {
+  const reqBody = req.body;
+  console.log('webhookEvent type: ', reqBody.webhookEvent);
+  // webhookEvent -> 'jira:issue_updated'
+  console.log('issue detail: ', reqBody.issue);
+  // issue -> {key, fields:{}, }
+  console.log('changelog: ', reqBody.changelog);
+  // changelog -> [{}]
+  // {field, fieldtype, from, fromString, to, toString}
+});
+
 module.exports = router;
