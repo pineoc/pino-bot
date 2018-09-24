@@ -6,6 +6,7 @@ var jiraClient = new JiraClient({
     base64: jiraConfig.basicAuthBase64
   }
 });
+module.exports.jiraConfig = jiraConfig;
 
 const getIssueByKey = function (issueKey, cb) {
   jiraClient.issue.getIssue({

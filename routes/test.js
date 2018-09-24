@@ -1,13 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var createError = require('http-errors');
-const slackConfig = require('../conf/slack.json');
 const slackService = require('./slackService');
 const jiraConfig = require('../conf/jira.json');
 const jiraService = require('./jiraService');
 
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
-const conversationId = slackConfig.testChannelID;
+const conversationId = slackService.slackConfig.testChannelID;
 
 router.get('/hello', (req, res) => {
   slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, (result) => {
@@ -145,17 +144,6 @@ router.get('/jira-issue-slack/:issueKey', (req, res) => {
       res.send(result);
     });
   });
-});
-
-router.post('/jira-webhooks', (req, res) => {
-  const reqBody = req.body;
-  console.log('webhookEvent type: ', reqBody.webhookEvent);
-  // webhookEvent -> 'jira:issue_updated'
-  console.log('issue detail: ', reqBody.issue);
-  // issue -> {key, fields:{}, }
-  console.log('changelog: ', reqBody.changelog);
-  // changelog -> [{}]
-  // {field, fieldtype, from, fromString, to, toString}
 });
 
 module.exports = router;

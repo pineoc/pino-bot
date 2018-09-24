@@ -16,9 +16,10 @@ const checkTextForJiraTicket = function (text, cb) {
     cb(t);
   }
 };
-// export for test
+// exports functions, config
 module.exports.checkTextForJiraTicket = checkTextForJiraTicket;
 module.exports.slackEvents = slackEvents;
+module.exports.slackConfig = slackConfig;
 
 // send Message to slack channel
 const sendMessage = function (msgObj, cb) {
