@@ -8,16 +8,23 @@ router.get('/', function (req, res) {
   res.send('respond with a resource');
 });
 
-router.post('/webhook', (req, res) => {
-  const reqBody = req.body;
-
-  // for message test logic
+const webhookMsgCont = function (data, webhookId, cb) {
+  // TODO: make can looping
+  if (jiraService.jiraConfig.jiraTracker[0].webhookId == webhookId) {
+    webhookMsgCreator(data, (msg) => {
+      let message = Object.assign({
+        channel: jiraService.jiraConfig.jiraTracker[0].sender.channel}, msg);
+      cb(message);
+    });
+  }
+};
+const webhookMsgCreator = function(data, cb) {
   // webhookEvent -> 'jira:issue_created', 'jira:issue_updated'
-  let eventType = reqBody.webhookEvent;
+  let eventType = data.webhookEvent;
   // issue -> {key, fields:{}}
-  let issue = reqBody.issue;
+  let issue = data.issue;
   // changelog -> {items: [{field, fieldtype, from, fromString, to, toString}]}
-  let changelog = reqBody.changelog;
+  let changelog = data.changelog;
   let statusString;
 
   if (eventType === 'jira:issue_created') {
@@ -31,7 +38,6 @@ router.post('/webhook', (req, res) => {
   }
 
   let msg = {
-    channel: slackService.slackConfig.testChannelID,
     attachments: [
       {
         'author_name': issue.fields.issuetype.name,
@@ -56,7 +62,16 @@ router.post('/webhook', (req, res) => {
       }
     ]
   };
-  slackService.sendMessage(msg);
+  cb(msg);
+};
+
+router.post('/webhook', (req, res) => {
+  const reqBody = req.body;
+  const webhookId = req.query['wh-id'];
+  
+  webhookMsgCont(reqBody, webhookId, (result) => {
+    slackService.sendMessage(result);
+  });
 });
 
 module.exports = router;
