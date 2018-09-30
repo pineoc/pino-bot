@@ -30,6 +30,14 @@ describe('slackService module test', function () {
       });
     });
   });
+  describe('checkText() Test', function () {
+    it('Should not get jira ticket on special URLs', function () {
+      slackService.checkTextForJiraTicket(`https://link.sharepoint.com/sites/aaa/_layouts/OneNote.aspx?id=%2Fsites%2FShared%20Documents%2Faaa_2018%2Faaa_2018&wd=target7CF9ECF84E-7C50-4816-8D6C-611FCC564668%2F4.8.3.2%7C975C8F9C-EA7E-4EF5-8F4E-36FF57FFCA0C%2F%29
+      onenote:https://link.sharepoint.com/sites/aaa/Shared%20Documents/aaa_2018/aaa_2018/1.a/a.one#4.8.3.2&section-id={F9ECF84E-7C50-4816-8D6C-611FCC564668}&page-id={975C8F9C-EA7E-4EF5-8F4E-36FF57FFCA0C}&end`, (res) => {
+          assert.equal(res, null);
+        });
+    });
+  });
 });
 
 describe('jiraService module test', function () {
