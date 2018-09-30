@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const slackService = require('./slackService');
 const jiraService = require('./jiraService');
+const jiraConfig = jiraService.jiraConfig;
 
 /* GET users listing. */
 router.get('/', function (req, res) {
@@ -9,13 +10,15 @@ router.get('/', function (req, res) {
 });
 
 const webhookMsgCont = function (data, webhookId, cb) {
-  // TODO: make can looping
-  if (jiraService.jiraConfig.jiraTracker[0].webhookId == webhookId) {
-    webhookMsgCreator(data, (msg) => {
-      let message = Object.assign({
-        channel: jiraService.jiraConfig.jiraTracker[0].sender.channel}, msg);
-      cb(message);
-    });
+  const jiraTracker = jiraConfig.jiraTracker;
+  for (let i = 0, len = jiraTracker.length; i < len; i++) {
+    if (jiraTracker[i].webhookId == webhookId) {
+      webhookMsgCreator(data, (msg) => {
+        let message = Object.assign({
+          channel: jiraTracker[i].sender.channel}, msg);
+        cb(message);
+      });
+    }
   }
 };
 const webhookMsgCreator = function(data, cb) {
@@ -31,10 +34,13 @@ const webhookMsgCreator = function(data, cb) {
     statusString = `:new: ${issue.fields.status.name}`;
   }
   if (eventType === 'jira:issue_updated') {
-    // TODO: Refactoring from, to cases already resolved issues
-    let logFrom = changelog.items[0].fromString ? changelog.items[0].fromString : changelog.items[1].fromString;
-    let logTo = changelog.items[0].toString ? changelog.items[0].toString : changelog.items[1].toString;
-    statusString = `\`${logFrom}\` :arrow_right: \`${logTo}\``;
+    for (let i = 0, len = changelog.items.length; i < len; i++) {
+      if (changelog.items[i].field === 'status') {
+        let clStringFrom = changelog.items[i].fromString;
+        let clStringTo  = changelog.items[i].toString;
+        statusString = `\`${clStringFrom}\` :arrow_right: \`${clStringTo}\``;
+      }
+    }
   }
 
   let msg = {
@@ -70,7 +76,9 @@ router.post('/webhook', (req, res) => {
   const webhookId = req.query['wh-id'];
   
   webhookMsgCont(reqBody, webhookId, (result) => {
-    slackService.sendMessage(result);
+    slackService.sendMessage(result, () => {
+      res.send(true);
+    });
   });
 });
 
