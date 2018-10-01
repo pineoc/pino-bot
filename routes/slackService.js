@@ -9,11 +9,15 @@ const web = new WebClient(token);
 
 const checkTextForJiraTicket = function (text, cb) {
   // Ref: https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
-  const jiraMatcher = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
+  // const jiraMatcherLegacy = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
+  const jiraMatcher = /((?<!([A-Za-z]{1,10})-?)[A-Z]+-\d+)/g;
   let t = text.match(jiraMatcher);
+  if (text.includes('onenote:')) {
+    return cb(null);
+  }
   if (t != null && t.length > 0) {
     // jira ticket string in text
-    cb(t);
+    return cb(t);
   }
 };
 // exports functions, config
