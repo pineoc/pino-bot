@@ -146,4 +146,15 @@ router.get('/jira-issue-slack/:issueKey', (req, res) => {
   });
 });
 
+router.get('/jira-transition/:issueKey', (req, res) => {
+  const issueKey = req.params.issueKey;
+  const transition = 11;
+  jiraService.transitionIssue(issueKey, transition, (data) => {
+    res.json(data);
+  });
+  jiraService.getTransitions(issueKey, (data) => {
+    console.log('transitions', data);
+  });
+});
+
 module.exports = router;

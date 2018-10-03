@@ -2,7 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const EventEmitter = require('events').EventEmitter;
 
-describe('EventEmitter', function(){
+describe('EventEmitter test', function(){
   describe('#emit()', function(){
     it('should invoke the callback', function(){
       var spy = sinon.spy()

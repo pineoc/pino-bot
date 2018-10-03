@@ -6,7 +6,6 @@ var jiraClient = new JiraClient({
     base64: jiraConfig.basicAuthBase64
   }
 });
-module.exports.jiraConfig = jiraConfig;
 
 const getIssueByKey = function (issueKey, cb) {
   jiraClient.issue.getIssue({
@@ -19,7 +18,6 @@ const getIssueByKey = function (issueKey, cb) {
     }
   });
 };
-module.exports.getIssueByKey = getIssueByKey;
 
 const getIssueByKeyFiltered = function (issueKey, cb) {
   getIssueByKey(issueKey, (res) => {
@@ -49,4 +47,25 @@ const getIssueByKeyFiltered = function (issueKey, cb) {
     cb(filteredData);
   });
 };
-module.exports.getIssueByKeyFiltered = getIssueByKeyFiltered;
+
+const transitionIssue = function (issueKey, transition, cb) {
+  const transObj = {issueKey: issueKey, transition: transition};
+  jiraClient.issue.transitionIssue(transObj, (res) => {
+    cb(res);
+  });
+};
+
+const getTransitions = function (issueKey, cb) {
+  const transObj = {issueKey: issueKey};
+  jiraClient.issue.getTransitions(transObj, (res) => {
+    cb(res);
+  });
+};
+
+module.exports = {
+  jiraConfig,
+  getIssueByKey,
+  getIssueByKeyFiltered,
+  transitionIssue,
+  getTransitions
+};
