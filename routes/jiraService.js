@@ -57,8 +57,18 @@ const transitionIssue = function (issueKey, transition, cb) {
 
 const getTransitions = function (issueKey, cb) {
   const transObj = {issueKey: issueKey};
-  jiraClient.issue.getTransitions(transObj, (res) => {
-    cb(res);
+  jiraClient.issue.getTransitions(transObj, (err, data) => {
+    if (err) {
+      return cb(err);
+    } else {
+      const tData = data.transitions.map(obj => {
+        let mObj = {};
+        mObj['tId'] = obj.id;
+        mObj['tName'] = obj.name;
+        return mObj;
+      });
+      return cb(tData);
+    }
   });
 };
 
