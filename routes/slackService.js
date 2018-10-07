@@ -20,10 +20,6 @@ const checkTextForJiraTicket = function (text, cb) {
     return cb(t);
   }
 };
-// exports functions, config
-module.exports.checkTextForJiraTicket = checkTextForJiraTicket;
-module.exports.slackEvents = slackEvents;
-module.exports.slackConfig = slackConfig;
 
 // send Message to slack channel
 const sendMessage = function (msgObj, cb) {
@@ -36,11 +32,10 @@ const sendMessage = function (msgObj, cb) {
       if(cb) cb(err);
     });
 };
-module.exports.sendMessage = sendMessage;
 
 const makeAttachment = function (data, cb) {
   let attachment;
-  if (data.errorMessages) {
+  if (data.errorMessages || data.key === undefined) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
@@ -77,4 +72,11 @@ const makeAttachment = function (data, cb) {
   };
   cb(attachment);
 };
-module.exports.makeAttachment = makeAttachment;
+
+module.exports = {
+  slackConfig,
+  slackEvents,
+  checkTextForJiraTicket,
+  sendMessage,
+  makeAttachment
+};
