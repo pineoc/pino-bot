@@ -4,7 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
 var jiraRouter = require('./routes/jira');
 var slackRouter = require('./routes/slack');
 var testRouter = require('./routes/test');
@@ -23,7 +22,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
 app.use('/jira', jiraRouter);
 app.use('/test', testRouter);
 

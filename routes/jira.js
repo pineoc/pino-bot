@@ -42,33 +42,15 @@ const webhookMsgCreator = function(data, cb) {
       }
     }
   }
+  issue['statusString'] = statusString;
+  issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
 
-  let msg = {
-    attachments: [
-      {
-        'author_name': issue.fields.issuetype.name,
-        'title': `[${issue.key}] ${issue.fields.summary}`,
-        'title_link': `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`,
-        'fields': [
-          {
-            'title': 'Status',
-            'value': statusString,
-            'short': false
-          }, {
-            'title': 'Assignee',
-            'value': issue.fields.assignee.displayName,
-            'short': true
-          }, {
-            'title': 'Reporter',
-            'value': issue.fields.reporter.displayName,
-            'short': true
-          }
-        ],
-        'footer': 'JIRA tracker'
-      }
-    ]
-  };
-  cb(msg);
+  slackService.makeChangelogAttachment(issue, (att) => {
+    const msg = {
+      attachments: [att]
+    };
+    cb(msg);
+  });
 };
 
 router.post('/webhook', (req, res) => {

@@ -60,15 +60,14 @@ const getTransitions = function (issueKey, cb) {
   jiraClient.issue.getTransitions(transObj, (err, data) => {
     if (err) {
       return cb(err);
-    } else {
-      const tData = data.transitions.map(obj => {
-        let mObj = {};
-        mObj['tId'] = obj.id;
-        mObj['tName'] = obj.name;
-        return mObj;
-      });
-      return cb(tData);
     }
+    const tData = data.transitions.map(obj => {
+      let mObj = {};
+      mObj['tId'] = obj.id;
+      mObj['tName'] = obj.name;
+      return mObj;
+    });
+    cb(tData);
   });
 };
 

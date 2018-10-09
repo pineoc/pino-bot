@@ -72,11 +72,41 @@ const makeAttachment = function (data, cb) {
   };
   cb(attachment);
 };
+const makeChangelogAttachment = function (data, cb) {
+  let attachment;
+  if (data.errorMessages || data.key === undefined) {
+    attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
+    return cb(attachment);
+  }
+  attachment = {
+    'author_name': data.fields.issuetype.name,
+    'title': `[${data.key}] ${data.fields.summary}`,
+    'title_link': data.issueLink,
+    'fields': [
+      {
+        'title': 'Status',
+        'value': data.statusString,
+        'short': false
+      }, {
+        'title': 'Assignee',
+        'value': data.fields.assignee.displayName,
+        'short': true
+      }, {
+        'title': 'Reporter',
+        'value': data.fields.reporter.displayName,
+        'short': true
+      }
+    ],
+    'footer': 'JIRA tracker'
+  }
+  cb(attachment);
+};
 
 module.exports = {
   slackConfig,
   slackEvents,
   checkTextForJiraTicket,
   sendMessage,
-  makeAttachment
+  makeAttachment,
+  makeChangelogAttachment
 };
