@@ -12,6 +12,7 @@
     "Epic": "#904EE2",
     "Suggestion": "#FF9C23"
   },
+  "testProjectKey":"PROJ",
   "jiraTracker": [{
     "trackerDesc": "Bug webhook sample",
     "webhookId": "1",

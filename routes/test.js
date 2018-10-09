@@ -62,8 +62,8 @@ router.get('/attachment', (req, res) => {
 router.get('/jira-get-issue/:issueKey', (req, res, next) => {
   const issueKey = req.params.issueKey;
 
-  jiraService.getIssueByKey(issueKey, (data) => {
-    if (data.errorMessages) {
+  jiraService.getIssueByKey(issueKey, (err, data) => {
+    if (err.errorMessages) {
       next(createError(500));
       return;
     }
@@ -155,8 +155,9 @@ router.get('/jira-transition/:issueKey', (req, res) => {
 
 router.get('/jira-do-transition/:issueKey', (req, res) => {
   const issueKey = req.params.issueKey;
-  jiraService.doTransitionIssue(issueKey, {}, (data) => {
-    res.json(data);
+  const query = req.query;
+  jiraService.doTransitionIssue(issueKey, query.t, (err, result) => {
+    res.json({error: err, result: result});
   });
 });
 

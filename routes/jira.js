@@ -4,12 +4,7 @@ const slackService = require('../service/slackService');
 const jiraService = require('../service/jiraService');
 const jiraConfig = jiraService.jiraConfig;
 
-/* GET users listing. */
-router.get('/', function (req, res) {
-  res.send('respond with a resource');
-});
-
-const webhookMsgCont = function (data, webhookId, cb) {
+const webhookMsgController = function (data, webhookId, cb) {
   const jiraTracker = jiraConfig.jiraTracker;
   for (let i = 0, len = jiraTracker.length; i < len; i++) {
     if (jiraTracker[i].webhookId == webhookId) {
@@ -57,7 +52,7 @@ router.post('/webhook', (req, res) => {
   const reqBody = req.body;
   const webhookId = req.query['wh-id'];
   
-  webhookMsgCont(reqBody, webhookId, (result) => {
+  webhookMsgController(reqBody, webhookId, (result) => {
     slackService.sendMessage(result, () => {
       res.send(true);
     });
