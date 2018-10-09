@@ -11,19 +11,14 @@ const getIssueByKey = function (issueKey, cb) {
   jiraClient.issue.getIssue({
     issueKey: issueKey
   }, function (err, res) {
-    if(err) {
-      cb(err);
-    } else {
-      cb(res);
-    }
+    cb(err, res);
   });
 };
-module.exports.getIssueByKey = getIssueByKey;
 
 const getIssueByKeyFiltered = function (issueKey, cb) {
-  getIssueByKey(issueKey, (res) => {
-    if (res.errorMessages) {
-      return cb(res);
+  getIssueByKey(issueKey, (err, res) => {
+    if (err || res.key === undefined) {
+      return cb(err);
     }
     // data filtered
     const fixVersionsName = res.fields.fixVersions.map(v => v.name);
@@ -48,4 +43,34 @@ const getIssueByKeyFiltered = function (issueKey, cb) {
     cb(filteredData);
   });
 };
-module.exports.getIssueByKeyFiltered = getIssueByKeyFiltered;
+
+const doTransitionIssue = function (issueKey, transition, cb) {
+  const transObj = {issueKey: issueKey, transition: transition};
+  jiraClient.issue.transitionIssue(transObj, (err, res) => {
+    cb(err, res);
+  });
+};
+
+const getTransitions = function (issueKey, cb) {
+  const transObj = {issueKey: issueKey};
+  jiraClient.issue.getTransitions(transObj, (err, data) => {
+    if (err) {
+      return cb(err);
+    }
+    const tData = data.transitions.map(obj => {
+      let mObj = {};
+      mObj['tId'] = obj.id;
+      mObj['tName'] = obj.name;
+      return mObj;
+    });
+    cb(tData);
+  });
+};
+
+module.exports = {
+  jiraConfig,
+  getIssueByKey,
+  getIssueByKeyFiltered,
+  doTransitionIssue,
+  getTransitions
+};
