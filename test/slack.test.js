@@ -1,5 +1,5 @@
 const assert = require('assert');
-const slackService = require('../routes/slackService');
+const slackService = require('../service/slackService');
 
 describe('slackService module test', function () {
   describe('checkText() success test', function () {

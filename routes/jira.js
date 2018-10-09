@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const slackService = require('./slackService');
-const jiraService = require('./jiraService');
+const slackService = require('../service/slackService');
+const jiraService = require('../service/jiraService');
 const jiraConfig = jiraService.jiraConfig;
 
 /* GET users listing. */

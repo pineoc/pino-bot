@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var createError = require('http-errors');
-const slackService = require('./slackService');
-const jiraConfig = require('../conf/jira.json');
-const jiraService = require('./jiraService');
+const slackService = require('../service/slackService');
+const jiraService = require('../service/jiraService');
+const jiraConfig = jiraService.jiraConfig;
 
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
 const conversationId = slackService.slackConfig.testChannelID;
@@ -149,6 +149,13 @@ router.get('/jira-issue-slack/:issueKey', (req, res) => {
 router.get('/jira-transition/:issueKey', (req, res) => {
   const issueKey = req.params.issueKey;
   jiraService.getTransitions(issueKey, (data) => {
+    res.json(data);
+  });
+});
+
+router.get('/jira-do-transition/:issueKey', (req, res) => {
+  const issueKey = req.params.issueKey;
+  jiraService.doTransitionIssue(issueKey, {}, (data) => {
     res.json(data);
   });
 });

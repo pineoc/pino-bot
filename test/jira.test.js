@@ -1,7 +1,7 @@
 const assert = require('assert');
 // const sinon = require('sinon');
 // const EventEmitter = require('events').EventEmitter;
-const jiraService = require('../routes/jiraService');
+const jiraService = require('../service/jiraService');
 
 describe('jiraService module test', function () {
   describe('getIssueByKey() test', function () {

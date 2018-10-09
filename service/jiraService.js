@@ -48,7 +48,7 @@ const getIssueByKeyFiltered = function (issueKey, cb) {
   });
 };
 
-const transitionIssue = function (issueKey, transition, cb) {
+const doTransitionIssue = function (issueKey, transition, cb) {
   const transObj = {issueKey: issueKey, transition: transition};
   jiraClient.issue.transitionIssue(transObj, (res) => {
     cb(res);
@@ -76,6 +76,6 @@ module.exports = {
   jiraConfig,
   getIssueByKey,
   getIssueByKeyFiltered,
-  transitionIssue,
+  doTransitionIssue,
   getTransitions
 };
