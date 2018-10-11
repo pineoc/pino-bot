@@ -63,7 +63,7 @@ router.get('/jira-get-issue/:issueKey', (req, res, next) => {
   const issueKey = req.params.issueKey;
 
   jiraService.getIssueByKey(issueKey, (err, data) => {
-    if (err.errorMessages) {
+    if (err) {
       next(createError(500));
       return;
     }
