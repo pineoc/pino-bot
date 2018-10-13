@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const slackService = require('../service/slackService');
 const jiraService = require('../service/jiraService');
+const utilService = require('../service/utilService');
 
 router.get('/', function (req, res) {
   res.send('slack router index');
@@ -42,22 +43,41 @@ slackService.slackEvents.on('message', (event) => {
   });
 });
 slackService.slackEvents.on('app_mention', function (event) {
+  // TODO: refactoring this command
   // add app_mention event type listener
-  if (event.text.includes('안녕') || event.text.includes('Hi')) {
+  const text = event.text;
+  const textParsed = text.split(' ');
+  if (text.includes('안녕') || text.includes('Hi')) {
     let msg = { 
       channel: event.channel,
       text: 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `Help`'
     };
     slackService.sendMessage(msg);
   }
-  if (event.text.includes('도움') || event.text.includes('Help')) {
+  if (text.includes('도움') || text.includes('Help')) {
     let msg = { 
       channel: event.channel,
       text: '*Can Do*\n- JIRA ticket info\n*WIP*\n- help command'
     };
     slackService.sendMessage(msg);
   }
+  if (textParsed[1] === '시간' || textParsed[1] === 'time') {
+    let msg = {
+      channel: event.channel,
+      text: ':clock3: `WHAT TIME IS IT?`'
+    };
+    if(textParsed[2] === '모두' || textParsed[2] === 'all') {
+      const times = utilService.getAllTime();
+      for (let i = 0, len = times.length; i < len; i++) {
+        msg['text'] += `\n${times[i]}`;
+      }
+    } else {
+      msg['text'] += `\n${utilService.getTime()}`;
+    }
+    slackService.sendMessage(msg);
+  }
 });
+
 slackService.slackEvents.on('error', console.error);
 
 module.exports = router;
