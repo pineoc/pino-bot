@@ -68,11 +68,18 @@ slackService.slackEvents.on('app_mention', function (event) {
     };
     if(textParsed[2] === '모두' || textParsed[2] === 'all') {
       const times = utilService.getAllTime();
-      for (let i = 0, len = times.length; i < len; i++) {
-        msg['text'] += `\n${times[i]}`;
+      msg['text'] += `\n :earth_asia: ${times[0].time}`;
+      msg['attachments'] = [{'text': `:earth_asia: ${times[0].time}`, 'color': '#000000'}];
+
+      for (let i = 1, len = times.length; i < len; i++) {
+        const t = times[i];
+        msg['text'] += `\n:flag-${t.country}: ${t.time}`;
+        msg['attachments'][0].text += `\n:flag-${t.country}: ${t.time}`;
       }
     } else {
-      msg['text'] += `\n${utilService.getTime()}`;
+      const t = utilService.getTime();
+      msg['text'] += `\n${t.time}`;
+      msg['attachments'] = [{'text': `:${t.country}: ${t.time}`, 'color': '#000000'}];
     }
     slackService.sendMessage(msg);
   }
