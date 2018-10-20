@@ -42,22 +42,46 @@ slackService.slackEvents.on('message', (event) => {
     });
   });
 });
-slackService.slackEvents.on('app_mention', function (event) {
+
+const getHelpText = function() {
+  const text = `*Can Do*\n
+- JIRA ticket info: JIRA Ticket Key included on message\n- Time: [time|시간] [all|모두]\n
+*WIP*\n- help command`;
+  return text;
+};
+
+const getTimeAttachment = function (isAll) {
+  let attachment = [];
+  if(isAll) {
+    const times = utilService.getAllTime();
+    attachment = [{'text': `:earth_asia: ${times[0].time}`, 'color': '#000000'}];
+    for (let i = 1, len = times.length; i < len; i++) {
+      const t = times[i];
+      attachment[0].text += `\n:flag-${t.country}: ${t.time}`;
+    }
+  } else {
+    const t = utilService.getTime();
+    attachment = [{'text': `:${t.country}: ${t.time}`, 'color': '#000000'}];
+  }
+  return attachment;
+};
+
+const slackCommand = function(event) {
   // TODO: refactoring this command
   // add app_mention event type listener
   const text = event.text;
   const textParsed = text.split(' ');
-  if (text.includes('안녕') || text.includes('Hi')) {
+  if (textParsed[1].includes('안녕') || textParsed[1].includes('hi')) {
     let msg = { 
       channel: event.channel,
-      text: 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `Help`'
+      text: 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `help`'
     };
     slackService.sendMessage(msg);
   }
-  if (text.includes('도움') || text.includes('Help')) {
+  if (text.includes('도움') || text.includes('help')) {
     let msg = { 
       channel: event.channel,
-      text: '*Can Do*\n- JIRA ticket info\n*WIP*\n- help command'
+      text: getHelpText()
     };
     slackService.sendMessage(msg);
   }
@@ -66,22 +90,17 @@ slackService.slackEvents.on('app_mention', function (event) {
       channel: event.channel,
       text: ':clock3: `WHAT TIME IS IT?`'
     };
+    let isAll = false;
     if(textParsed[2] === '모두' || textParsed[2] === 'all') {
-      const times = utilService.getAllTime();
-      msg['attachments'] = [{'text': `:earth_asia: ${times[0].time}`, 'color': '#000000'}];
-
-      for (let i = 1, len = times.length; i < len; i++) {
-        const t = times[i];
-        msg['attachments'][0].text += `\n:flag-${t.country}: ${t.time}`;
-      }
-    } else {
-      const t = utilService.getTime();
-      msg['attachments'] = [{'text': `:${t.country}: ${t.time}`, 'color': '#000000'}];
+      isAll = true;
     }
+    msg['attachments'] = getTimeAttachment(isAll);
+
     slackService.sendMessage(msg);
   }
-});
+};
 
+slackService.slackEvents.on('app_mention', slackCommand);
 slackService.slackEvents.on('error', console.error);
 
 module.exports = router;
