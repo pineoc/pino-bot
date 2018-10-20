@@ -43,9 +43,8 @@ slackService.slackEvents.on('message', (event) => {
   });
 });
 
-const getHelpText = function() {
-  const text = `*Can Do*\n
-- JIRA ticket info: JIRA Ticket Key included on message\n- Time: [time|시간] [all|모두]\n
+const getHelpText = function () {
+  const text = `*Can Do*\n- JIRA ticket info: JIRA Ticket Key included on message\n- Time: @helper [time|시간] [all|모두]\n
 *WIP*\n- help command`;
   return text;
 };
@@ -66,36 +65,42 @@ const getTimeAttachment = function (isAll) {
   return attachment;
 };
 
-const slackCommand = function(event) {
+const hiCommand = function (_msg) {
+  let msg = _msg;
+  msg['text'] = 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `help`';
+  slackService.sendMessage(msg);
+};
+const helpCommand = function (_msg) {
+  let msg = _msg;
+  msg['text'] = getHelpText();
+  slackService.sendMessage(msg);
+};
+
+const slackCommand = function (event) {
   // TODO: refactoring this command
   // add app_mention event type listener
   const text = event.text;
   const textParsed = text.split(' ');
-  if (textParsed[1].includes('안녕') || textParsed[1].includes('hi')) {
-    let msg = { 
-      channel: event.channel,
-      text: 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `help`'
-    };
-    slackService.sendMessage(msg);
-  }
-  if (text.includes('도움') || text.includes('help')) {
-    let msg = { 
-      channel: event.channel,
-      text: getHelpText()
-    };
-    slackService.sendMessage(msg);
+  let msg = {channel: event.channel};
+  const commandList = {
+    hi: ['hi', '안녕', hiCommand],
+    help: ['help', '도움', helpCommand],
+    // time: ['time', '시간']
+  };
+
+  for (var command in commandList) {
+    const cl = commandList[command];
+    if (textParsed[1] === cl[0] || textParsed[1] === cl[1]) {
+      cl[2].call(this, msg);
+    }
   }
   if (textParsed[1] === '시간' || textParsed[1] === 'time') {
-    let msg = {
-      channel: event.channel,
-      text: ':clock3: `WHAT TIME IS IT?`'
-    };
-    let isAll = false;
+    msg['text'] = ':clock3: `WHAT TIME IS IT?`';
+    let isAllTime = false;
     if(textParsed[2] === '모두' || textParsed[2] === 'all') {
-      isAll = true;
+      isAllTime = true;
     }
-    msg['attachments'] = getTimeAttachment(isAll);
-
+    msg['attachments'] = getTimeAttachment(isAllTime);
     slackService.sendMessage(msg);
   }
 };
