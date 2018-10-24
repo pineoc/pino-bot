@@ -24,7 +24,7 @@ const webhookMsgCreator = function(data, cb) {
   let changelog = data.changelog;
   let statusString;
 
-  console.log('changelog:', changelog);
+  // TODO: fix exceptions catching logic
   if (changelog.items === undefined) {
     return cb(null);
   }
@@ -42,11 +42,11 @@ const webhookMsgCreator = function(data, cb) {
     }
   }
 
+  // TODO: fix exceptions catching logic
   if (statusString === undefined) {
     return cb(null);
   }
-  
-  console.log(eventType, statusString);
+
   issue['statusString'] = statusString;
   issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
 
