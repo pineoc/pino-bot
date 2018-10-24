@@ -9,8 +9,7 @@ const webhookMsgController = function (data, webhookId, cb) {
   for (let i = 0, len = jiraTracker.length; i < len; i++) {
     if (jiraTracker[i].webhookId == webhookId) {
       webhookMsgCreator(data, (msg) => {
-        let message = Object.assign({
-          channel: jiraTracker[i].sender.channel}, msg);
+        let message = Object.assign({channel: jiraTracker[i].sender.channel}, msg);
         cb(message);
       });
     }
@@ -25,6 +24,11 @@ const webhookMsgCreator = function(data, cb) {
   let changelog = data.changelog;
   let statusString;
 
+  console.log('changelog:', changelog);
+  if (changelog.items === undefined) {
+    return cb(null);
+  }
+
   if (eventType === 'jira:issue_created') {
     statusString = `:new: ${issue.fields.status.name}`;
   }
@@ -37,7 +41,12 @@ const webhookMsgCreator = function(data, cb) {
       }
     }
   }
-  console.log(eventType, statusString, changelog);
+
+  if (statusString === undefined) {
+    return cb(null);
+  }
+  
+  console.log(eventType, statusString);
   issue['statusString'] = statusString;
   issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
 
