@@ -37,6 +37,7 @@ const webhookMsgCreator = function(data, cb) {
       }
     }
   }
+  console.log(eventType, statusString, changelog);
   issue['statusString'] = statusString;
   issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
 

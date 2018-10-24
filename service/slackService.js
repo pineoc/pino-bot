@@ -89,7 +89,7 @@ const makeChangelogAttachment = function (data, cb) {
         'short': false
       }, {
         'title': 'Assignee',
-        'value': data.fields.assignee.displayName,
+        'value': data.fields.assignee === null ? 'Unassigned' : data.fields.assignee.displayName,
         'short': true
       }, {
         'title': 'Reporter',
