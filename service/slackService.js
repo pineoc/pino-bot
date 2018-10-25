@@ -92,6 +92,10 @@ const makeChangelogAttachment = function (data, cb) {
         'value': data.fields.priority.name,
         'short': true
       }, {
+        'title': 'Severity',
+        'value': data.fields.customfield_10503.value,
+        'short': true
+      }, {
         'title': 'Assignee',
         'value': data.fields.assignee === null ? 'Unassigned' : data.fields.assignee.displayName,
         'short': true
