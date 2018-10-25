@@ -79,7 +79,7 @@ const makeChangelogAttachment = function (data, cb) {
     return cb(attachment);
   }
   attachment = {
-    'author_name': data.fields.issuetype.name,
+    'color': data.issueColor,
     'title': `[${data.key}] ${data.fields.summary}`,
     'title_link': data.issueLink,
     'fields': [
@@ -87,6 +87,10 @@ const makeChangelogAttachment = function (data, cb) {
         'title': 'Status',
         'value': data.statusString,
         'short': false
+      }, {
+        'title': 'Priority',
+        'value': data.fields.priority.name,
+        'short': true
       }, {
         'title': 'Assignee',
         'value': data.fields.assignee === null ? 'Unassigned' : data.fields.assignee.displayName,

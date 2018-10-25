@@ -9,7 +9,10 @@ const webhookMsgController = function (data, webhookId, cb) {
   for (let i = 0, len = jiraTracker.length; i < len; i++) {
     if (jiraTracker[i].webhookId == webhookId) {
       webhookMsgCreator(data, (msg) => {
-        let message = Object.assign({channel: jiraTracker[i].sender.channel}, msg);
+        let messageData = {
+          channel: jiraTracker[i].sender.channel
+        }
+        let message = Object.assign(messageData, msg);
         cb(message);
       });
     }
@@ -20,6 +23,7 @@ const webhookMsgCreator = function(data, cb) {
   let eventType = data.webhookEvent;
   // issue -> {key, fields:{}}
   let issue = data.issue;
+  let issueColor = jiraConfig.ticketColors[issue.fields.issuetype.name];
   // changelog -> {items: [{field, fieldtype, from, fromString, to, toString}]}
   let changelog = data.changelog;
   let statusString;
@@ -49,6 +53,7 @@ const webhookMsgCreator = function(data, cb) {
 
   issue['statusString'] = statusString;
   issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
+  issue['issueColor'] = issueColor;
 
   slackService.makeChangelogAttachment(issue, (att) => {
     const msg = {
