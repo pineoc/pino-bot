@@ -28,11 +28,6 @@ const webhookMsgCreator = function(data, cb) {
   let changelog = data.changelog;
   let statusString;
 
-  // TODO: fix exceptions catching logic
-  if (changelog.items === undefined) {
-    return cb(null);
-  }
-
   if (eventType === 'jira:issue_created') {
     statusString = `:new: ${issue.fields.status.name}`;
   }
