@@ -6,7 +6,8 @@ const getHelpText = function () {
   const commandDescText = {
     '`JIRA ticket info`': 'JIRA Ticket Key included on message',
     '`Time`': '@helper [time | 시간] [all | 모두]',
-    '`jira-status`': '@helper [jira-status | 지라상태]'
+    '`jira-status`': '@helper [jira-status | 지라상태]',
+    '`conch`': '@helper [conch | 소라고둥] question'
   };
   for (var command in commandDescText) {
     const text = commandDescText[command];
