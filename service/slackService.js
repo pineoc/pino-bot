@@ -106,7 +106,7 @@ const makeChangelogAttachment = function (data, cb) {
       }
     ],
     'footer': 'JIRA tracker'
-  }
+  };
   cb(attachment);
 };
 

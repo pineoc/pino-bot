@@ -1,7 +1,7 @@
 const assert = require('assert');
 const utilService = require('../service/utilService');
 
-describe('Util function call test', function () {
+describe('Util time function call test', function () {
   describe('util time test', function () {
     it('time string not null', function () {
       assert.notEqual(utilService.getTime(), null);
