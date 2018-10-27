@@ -76,12 +76,36 @@ const jiraStatusCommand = function (param, cb) {
   });
 };
 
+const conchCommand = function (param, cb) {
+  let msg = param.baseMsg;
+  let textParsed = param.textParsed;
+  if (textParsed.length < 3) {
+    msg['text'] = ':shell: Huh?';
+    return cb(msg);
+  }
+
+  let attachment = {
+    thumb_url: 'https://user-images.githubusercontent.com/5077086/47601577-01d60280-da0e-11e8-87af-a2abe55efe12.jpg',
+    title: ':shell: Magic Conch 마법의 소라고둥 :shell:'
+  };
+  if (utilService.getConchDecision()) {
+    attachment['color'] = 'good';
+    attachment['text'] = 'Yes(그래)\n';
+  } else {
+    attachment['color'] = 'danger';
+    attachment['text'] = 'No(아니)\nNope Nope Nope';
+  }
+  msg['attachments'] = [attachment];
+  cb(msg);
+};
+
 const getCommandList = function () {
   const commandList = {
     'hi': ['hi', '안녕', hiCommand],
     'help': ['help', '도움', helpCommand],
     'time': ['time', '시간', timeCommand],
-    'jira-status': ['jira-status', '지라상태', jiraStatusCommand]
+    'jira-status': ['jira-status', '지라상태', jiraStatusCommand],
+    'conch': ['conch', '소라고둥', conchCommand]
   };
   return commandList;
 };

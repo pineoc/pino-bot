@@ -26,7 +26,13 @@ const getAllTime = function () {
   return times;
 };
 
+const getConchDecision = function () {
+  const decision = Math.random() >= 0.5;
+  return decision;
+};
+
 module.exports = {
   getTime,
-  getAllTime
+  getAllTime,
+  getConchDecision
 };
