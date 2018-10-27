@@ -1,3 +1,4 @@
+const request = require('request');
 var JiraClient = require('jira-connector');
 const jiraConfig = require('../conf/jira.json');
 var jiraClient = new JiraClient({
@@ -67,10 +68,21 @@ const getTransitions = function (issueKey, cb) {
   });
 };
 
+const getJiraStatus = function (jiraUrl, cb) {
+  const url = `${jiraUrl}/status`;
+  request(url, { json: true }, (err, res, body) => {
+    if (err) { 
+      console.error(err); 
+    }
+    cb(err, body);
+  });
+};
+
 module.exports = {
   jiraConfig,
   getIssueByKey,
   getIssueByKeyFiltered,
   doTransitionIssue,
-  getTransitions
+  getTransitions,
+  getJiraStatus
 };

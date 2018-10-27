@@ -1,5 +1,5 @@
 const assert = require('assert');
-const sinon = require('sinon');
+// const sinon = require('sinon');
 const jiraService = require('../service/jiraService');
 const jiraConf = jiraService.jiraConfig;
 
@@ -83,6 +83,26 @@ describe('jiraService transition test', function () {
         assert.equal(res, null);
         done();
       });
+    });
+  });
+});
+
+describe('JIRA 상태를 알 수 있어야한다.', function () {
+  describe('JIRA 서비스에 status 상태 값을 받아올 수 있다.', function () {
+    let statusResult;
+    before('status result init', function (done) {
+      const jiraUrl = jiraService.jiraConfig.httpHost;
+      jiraService.getJiraStatus(jiraUrl, function (err, res) {
+        statusResult = res;
+        done();
+      });
+    });
+    it('요청에 대한 response 값이 json 형태로 존재해야한다.', function () {
+      assert.equal(typeof statusResult, 'object');
+    });
+    it('요청에 대한 응답에 state가 존재해야 한다.', function () {
+      assert.notEqual(statusResult, null);
+      assert.notEqual(statusResult.state, null);
     });
   });
 });

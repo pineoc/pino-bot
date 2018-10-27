@@ -1,9 +1,9 @@
 {
-  "httpHost": "https://pineoc.com",
-  "host": "pineoc.com",
+  "httpHost": "https://jira.com",
+  "host": "jira.com",
   "basic_auth": {
-    "username": "pineoc",
-    "password": "1234"
+    "username": "jira-id",
+    "password": "jira-pw"
   },
   "basicAuthBase64": "U2lyVXNlck9mTmFtZTpQYXNzd29yZDEyMw==",
   "ticketColors": {
@@ -13,6 +13,7 @@
     "Suggestion": "#FF9C23"
   },
   "testProjectKey":"PROJ",
+  "jiraStatusChannel": "AAAAAAAA",
   "jiraTracker": [{
     "trackerDesc": "Bug webhook sample",
     "webhookId": "1",
