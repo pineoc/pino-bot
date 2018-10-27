@@ -1,7 +1,6 @@
 var cron = require('node-cron');
 var express = require('express');
 var router = express.Router();
-const utilService = require('../service/utilService');
 const slackService = require('../service/slackService');
 const jiraService = require('../service/jiraService');
 const jiraConfig = jiraService.jiraConfig;
@@ -72,10 +71,10 @@ router.post('/webhook', (req, res) => {
 });
 
 const reportJiraStatus = function () {
-  utilService.getJiraStatus(jiraConfig.httpHost, (err, res) => {
+  jiraService.getJiraStatus((err, res) => {
     if (err || res.state === 'ERROR' || res.state === 'STOPPING') {
       let msg = {
-        channel: slackService.slackConfig.testChannelID,
+        channel: jiraConfig.jiraStatusChannel,
         attachments: [{
           title: 'JIRA status',
           text: 'JIRA service not working',

@@ -91,8 +91,7 @@ describe('JIRA 상태를 알 수 있어야한다.', function () {
   describe('JIRA 서비스에 status 상태 값을 받아올 수 있다.', function () {
     let statusResult;
     before('status result init', function (done) {
-      const jiraUrl = jiraService.jiraConfig.httpHost;
-      jiraService.getJiraStatus(jiraUrl, function (err, res) {
+      jiraService.getJiraStatus(function (err, res) {
         statusResult = res;
         done();
       });

@@ -68,8 +68,8 @@ const getTransitions = function (issueKey, cb) {
   });
 };
 
-const getJiraStatus = function (jiraUrl, cb) {
-  const url = `${jiraUrl}/status`;
+const getJiraStatus = function (cb) {
+  const url = `${jiraConfig.httpHost}/status`;
   request(url, { json: true }, (err, res, body) => {
     if (err) { 
       console.error(err); 
