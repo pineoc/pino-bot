@@ -1,8 +1,18 @@
 const utilService = require('./utilService');
+const jiraService = require('./jiraService');
+
 const getHelpText = function () {
-  const text = `*Can Do*\n- JIRA ticket info: JIRA Ticket Key included on message\n- Time: @helper [time|시간] [all|모두]\n
-*WIP*\n- help command`;
-  return text;
+  let canDoText = '*Can Do*\n';
+  const commandDescText = {
+    '`JIRA ticket info`': 'JIRA Ticket Key included on message',
+    '`Time`': '@helper [time | 시간] [all | 모두]',
+    '`jira-status`': '@helper [jira-status | 지라상태]'
+  };
+  for (var command in commandDescText) {
+    const text = commandDescText[command];
+    canDoText += `- ${command}: ${text}\n`;
+  }
+  return canDoText;
 };
 const hiCommand = function (param, cb) {
   let msg = param.baseMsg;
@@ -49,11 +59,29 @@ const timeCommand = function (param, cb) {
   cb(msg);
 };
 
+const jiraStatusCommand = function (param, cb) {
+  let msg = param.baseMsg;
+  const statusColor = {
+    'RUNNING': 'good',
+    'ERROR': 'danger',
+    'STOPPING': 'danger'
+  };
+  msg['text'] = 'JIRA status';
+  jiraService.getJiraStatus((err, res) => {
+    msg['attachments'] = [{
+      color: statusColor[res.state],
+      text: `*${res.state}*`
+    }];
+    cb(msg);
+  });
+};
+
 const getCommandList = function () {
   const commandList = {
-    hi: ['hi', '안녕', hiCommand],
-    help: ['help', '도움', helpCommand],
-    time: ['time', '시간', timeCommand]
+    'hi': ['hi', '안녕', hiCommand],
+    'help': ['help', '도움', helpCommand],
+    'time': ['time', '시간', timeCommand],
+    'jira-status': ['jira-status', '지라상태', jiraStatusCommand]
   };
   return commandList;
 };
