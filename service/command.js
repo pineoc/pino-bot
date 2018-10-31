@@ -2,12 +2,12 @@ const utilService = require('./utilService');
 const jiraService = require('./jiraService');
 
 const getHelpText = function () {
-  let canDoText = '*Can Do*\n';
+  let canDoText = '*Can Do*\n> @helper time all\n';
   const commandDescText = {
     '`JIRA ticket info`': 'JIRA Ticket Key included on message',
-    '`Time`': '@helper [time | 시간] [all | 모두]',
-    '`jira-status`': '@helper [jira-status | 지라상태]',
-    '`conch`': '@helper [conch | 소라고둥] question'
+    '`Time`': '@helper [time or 시간] [all or 모두]',
+    '`jira-status`': '@helper [jira-status or 지라상태]',
+    '`conch`': '@helper [conch or 소라고둥] question'
   };
   for (var command in commandDescText) {
     const text = commandDescText[command];
