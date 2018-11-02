@@ -12,6 +12,11 @@
     "Epic": "#904EE2",
     "Suggestion": "#FF9C23"
   },
+  "statusColors": {
+    "blue-gray": "#4A6785",
+    "yellow": "warning",
+    "green": "good"
+  },
   "testProjectKey":"PROJ",
   "jiraStatusChannel": "AAAAAAAA",
   "jiraTracker": [{
