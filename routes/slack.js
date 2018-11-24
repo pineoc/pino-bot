@@ -3,6 +3,7 @@ var router = express.Router();
 const slackService = require('../service/slackService');
 const jiraService = require('../service/jiraService');
 const commandModule = require('../service/command');
+const dbService = require('../service/db');
 
 router.get('/', function (req, res) {
   res.send('slack router index');
@@ -29,14 +30,10 @@ const getMakeAttachmentPromises = function (data) {
   }
   return promises;
 };
-slackService.slackEvents.on('message', (event) => {
-  // slack bot events
-  if (event.user === undefined)
-    return;
-
-  slackService.checkTextForJiraTicket(event.text, (result) => {
+const sendJiraInfoMessage = function (eventInfo) {
+  slackService.checkTextForJiraTicket(eventInfo.text, (result) => {
     let message = {
-      channel: event.channel,
+      channel: eventInfo.channel,
       text: 'JIRA Report',
       attachments: []
     };
@@ -46,10 +43,20 @@ slackService.slackEvents.on('message', (event) => {
       slackService.sendMessage(message);
     });
   });
+};
+slackService.slackEvents.on('message', (event) => {
+  // slack bot events
+  if (event.user === undefined)
+    return;
+  
+  dbService.getJiraInfoChannel({channel: event.channel}, (res) => {
+    if (res === undefined || res.isOn) {
+      sendJiraInfoMessage(event);
+    }
+  });
 });
 
 const slackCommand = function (event) {
-  // TODO: refactoring this command
   // add app_mention event type listener
   const text = event.text;
   const textParsed = text.split(' ');
@@ -61,7 +68,7 @@ const slackCommand = function (event) {
   for (var command in commandList) {
     const cl = commandList[command];
     if (textParsed[1] === cl[0] || textParsed[1] === cl[1]) {
-      cl[2].call(this, {baseMsg, textParsed}, (msg) => {
+      cl[2].call(this, {baseMsg, textParsed, event}, (msg) => {
         slackService.sendMessage(msg);
       });
     }

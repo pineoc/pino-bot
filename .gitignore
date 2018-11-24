@@ -73,3 +73,4 @@ typings/
 .serverless
 conf/slack.json
 conf/jira.json
+conf/db.json

@@ -1,5 +1,6 @@
 const utilService = require('./utilService');
 const jiraService = require('./jiraService');
+const dbService = require('./db');
 
 const getHelpText = function () {
   let canDoText = '*Can Do*\n> @helper time all\n';
@@ -7,7 +8,8 @@ const getHelpText = function () {
     '`JIRA ticket info`': 'JIRA Ticket Key included on message',
     '`Time`': '@helper [time or 시간] [all or 모두]',
     '`jira-status`': '@helper [jira-status or 지라상태]',
-    '`conch`': '@helper [conch or 소라고둥] question'
+    '`conch`': '@helper [conch or 소라고둥] question',
+    '`jira-info`': '@helper [jira-info or 지라정보] [on or off]'
   };
   for (var command in commandDescText) {
     const text = commandDescText[command];
@@ -100,13 +102,46 @@ const conchCommand = function (param, cb) {
   cb(msg);
 };
 
+const jiraInfoCommand = function (param, cb) {
+  let msg = param.baseMsg;
+  let textParsed = param.textParsed;
+  let channel = param.event.channel;
+  msg['text'] = 'JIRA info On/Off';
+
+  if (textParsed.length < 3) {
+    msg['text'] = 'please enter the [on or off]';
+    return cb(msg);
+  }
+
+  let onOffStr = textParsed[2].toLowerCase();
+  if (!(onOffStr === 'on' || onOffStr === 'off')) {
+    msg['text'] = 'please enter the [on or off]';
+    return cb(msg);
+  }
+  let isOn = onOffStr === 'on' ? true : false;
+  let info = {channel: channel, isOn: isOn};
+  dbService.setJiraInfo(info, (res) => {
+    if (res === undefined) {
+      msg['text'] = 'error occured';
+      return cb(msg);
+    }
+    let att = {
+      color: isOn ? 'good' : 'danger',
+      text: isOn ? 'JIRA info on' : 'JIRA info off'
+    };
+    msg['attachments'] = [att];
+    cb(msg);
+  });
+};
+
 const getCommandList = function () {
   const commandList = {
     'hi': ['hi', '안녕', hiCommand],
     'help': ['help', '도움', helpCommand],
     'time': ['time', '시간', timeCommand],
     'jira-status': ['jira-status', '지라상태', jiraStatusCommand],
-    'conch': ['conch', '소라고둥', conchCommand]
+    'conch': ['conch', '소라고둥', conchCommand],
+    'jira-info': ['jira-info', '지라정보', jiraInfoCommand]
   };
   return commandList;
 };
