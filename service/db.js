@@ -34,7 +34,7 @@ function addJiraInfoChannel(params, cb) {
   cb(checkExist);
 }
 function setJiraInfo(params, cb) {
-  addJiraInfoChannel(params, (data) => {
+  addJiraInfoChannel(params, () => {
     const res = db.get('jiraInfoChannels')
       .find({id: params.channel})
       .assign({isOn: JSON.parse(params.isOn)})

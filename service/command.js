@@ -101,24 +101,29 @@ const conchCommand = function (param, cb) {
   msg['attachments'] = [attachment];
   cb(msg);
 };
-
-const jiraInfoCommand = function (param, cb) {
-  let msg = param.baseMsg;
-  let textParsed = param.textParsed;
-  let channel = param.event.channel;
+function jiraInfoCommandValidator(textParsed) {
+  if (textParsed.length < 3) {
+    return false;
+  }
+  let onOffStr = textParsed[2].toLowerCase();
+  if (!(onOffStr === 'on' || onOffStr === 'off')) {
+    return false;
+  }
+  return true;
+}
+const jiraInfoCommand = function (params, cb) {
+  let msg = params.baseMsg;
+  let textParsed = params.textParsed;
+  let channel = params.event.channel;
   msg['text'] = 'JIRA info On/Off';
 
-  if (textParsed.length < 3) {
+  if (jiraInfoCommandValidator(textParsed) === false) {
     msg['text'] = 'please enter the [on or off]';
     return cb(msg);
   }
 
   let onOffStr = textParsed[2].toLowerCase();
-  if (!(onOffStr === 'on' || onOffStr === 'off')) {
-    msg['text'] = 'please enter the [on or off]';
-    return cb(msg);
-  }
-  let isOn = onOffStr === 'on' ? true : false;
+  let isOn = (onOffStr === 'on') ? true : false;
   let info = {channel: channel, isOn: isOn};
   dbService.setJiraInfo(info, (res) => {
     if (res === undefined) {
