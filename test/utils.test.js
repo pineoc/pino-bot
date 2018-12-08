@@ -33,9 +33,10 @@ describe('Util time function call test', function () {
       assert.equal(time3.country, 'us');
       assert.equal(time3.time, time2Value);
     });
-    it('timezone search return undefined on no data', function () {
+    it('timezone search return no data', function () {
       const time = utilService.getTimeBySearch('111');
-      assert.equal(time, null);
+      const noDataFormat = {time: 'invalid country code', country: 'question'};
+      assert.deepEqual(time, noDataFormat);
     });
   });
 });

@@ -3,10 +3,10 @@ const jiraService = require('./jiraService');
 const dbService = require('./db');
 
 const getHelpText = function () {
-  let canDoText = '*Can Do*\n> @helper time all\n';
+  let canDoText = '*Can Do*\n';
   const commandDescText = {
     '`JIRA ticket info`': 'JIRA Ticket Key included on message',
-    '`Time`': '@helper [time or 시간] [all or 모두]',
+    '`Time`': '@helper [time or 시간] [all or 모두 or 국가(country)]\n> country: kr, cn, jp, nl, us(ny, la)',
     '`jira-status`': '@helper [jira-status or 지라상태]',
     '`conch`': '@helper [conch or 소라고둥] question',
     '`jira-info`': '@helper [jira-info or 지라정보] [on or off]'
@@ -28,9 +28,9 @@ const helpCommand = function (param, cb) {
   msg['text'] = getHelpText();
   cb(msg);
 };
-const getTimeAttachment = function (isAll) {
+const getTimeAttachment = function (param) {
   let attachment = [];
-  if (isAll) {
+  if (param === '모두' || param === 'all') {
     const times = utilService.getAllTime();
     attachment = [{
       'text': `:earth_asia: ${times[0].time}`,
@@ -41,7 +41,7 @@ const getTimeAttachment = function (isAll) {
       attachment[0].text += `\n:flag-${t.country}: ${t.time}`;
     }
   } else {
-    const t = utilService.getTime();
+    let t = param ? utilService.getTimeBySearch(param) : utilService.getTime();
     attachment = [{
       'text': `:${t.country}: ${t.time}`,
       'color': '#000000'
@@ -54,11 +54,7 @@ const timeCommand = function (param, cb) {
   let msg = param.baseMsg;
   let textParsed = param.textParsed;
   msg['text'] = ':clock3: `WHAT TIME IS IT?`';
-  let isAllTime = false;
-  if (textParsed[2] === '모두' || textParsed[2] === 'all') {
-    isAllTime = true;
-  }
-  msg['attachments'] = getTimeAttachment(isAllTime);
+  msg['attachments'] = getTimeAttachment(textParsed[2]);
   cb(msg);
 };
 
