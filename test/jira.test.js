@@ -46,7 +46,7 @@ describe('jiraService get info test', function () {
 describe('jiraService transition test', function () {
   describe('issue getTransition test', function () {
     it('Should get transition data not null', function (done) {
-      jiraService.getTransitions(`${jiraConf.testProjectKey}-13`, function (res) {
+      jiraService.getTransitions(jiraConf.testProjectTicket, function (res) {
         assert.equal(res.errorMessages, undefined);
         assert.notEqual(res, null);
         done();
@@ -61,7 +61,7 @@ describe('jiraService transition test', function () {
     });
   });
   describe('issue doTransition test', function () {
-    const issueKey = `${jiraConf.testProjectKey}-9391`;
+    const issueKey = jiraConf.testProjectTicket;
     let transitions;
     this.beforeEach(function (done) {
       jiraService.getTransitions(issueKey, function (res) {

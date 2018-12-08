@@ -18,6 +18,7 @@
     "green": "good"
   },
   "testProjectKey":"PROJ",
+  "testProjectTicket":"PROJ-1",
   "jiraStatusChannel": "AAAAAAAA",
   "jiraTracker": [{
     "trackerDesc": "Bug webhook sample",
