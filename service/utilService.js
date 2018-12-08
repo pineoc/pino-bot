@@ -39,7 +39,7 @@ const searchTimezone = function (word) {
 const getTimeBySearch = function (word) {
   const timezone = searchTimezone(word);
   if (timezone) {
-    const time = moment().tz(timezone.tz);
+    const time = moment().tz(timezone.tz).format(dateFormat);
     const timeObj = {time: time, country: timezone.country};
     return timeObj;
   } else {
