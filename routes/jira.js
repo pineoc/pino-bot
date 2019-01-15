@@ -22,13 +22,14 @@ const webhookMsgController = function (data, webhookId, cb) {
 const webhookMsgCreator = function(data, cb) {
   // webhookEvent -> 'jira:issue_created', 'jira:issue_updated'
   let eventType = data.webhookEvent;
+  let user = data.user;
   // issue -> {key, fields:{}}
   let issue = data.issue;
-  let issueColor = jiraConfig.ticketColors[issue.fields.issuetype.name];
+  const statusColorName = issue.fields.status.statusCategory.colorName;
+  let issueColor = jiraConfig.statusColors[statusColorName];
   // changelog -> {items: [{field, fieldtype, from, fromString, to, toString}]}
   let changelog = data.changelog;
   let statusString;
-
   if (eventType === 'jira:issue_created') {
     statusString = `:new: ${issue.fields.status.name}`;
   }
@@ -46,7 +47,7 @@ const webhookMsgCreator = function(data, cb) {
   if (statusString === undefined) {
     return cb(null);
   }
-
+  issue['user'] = user;
   issue['statusString'] = statusString;
   issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
   issue['issueColor'] = issueColor;

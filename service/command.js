@@ -1,13 +1,15 @@
 const utilService = require('./utilService');
 const jiraService = require('./jiraService');
+const dbService = require('./db');
 
 const getHelpText = function () {
-  let canDoText = '*Can Do*\n> @helper time all\n';
+  let canDoText = '*Can Do*\n';
   const commandDescText = {
     '`JIRA ticket info`': 'JIRA Ticket Key included on message',
-    '`Time`': '@helper [time or 시간] [all or 모두]',
+    '`Time`': '@helper [time or 시간] [all or 모두 or 국가(country)]\n> country: kr, cn, jp, nl, us(ny, la)',
     '`jira-status`': '@helper [jira-status or 지라상태]',
-    '`conch`': '@helper [conch or 소라고둥] question'
+    '`conch`': '@helper [conch or 소라고둥] question',
+    '`jira-info`': '@helper [jira-info or 지라정보] [on or off]'
   };
   for (var command in commandDescText) {
     const text = commandDescText[command];
@@ -26,9 +28,9 @@ const helpCommand = function (param, cb) {
   msg['text'] = getHelpText();
   cb(msg);
 };
-const getTimeAttachment = function (isAll) {
+const getTimeAttachment = function (param) {
   let attachment = [];
-  if (isAll) {
+  if (param === '모두' || param === 'all') {
     const times = utilService.getAllTime();
     attachment = [{
       'text': `:earth_asia: ${times[0].time}`,
@@ -39,7 +41,7 @@ const getTimeAttachment = function (isAll) {
       attachment[0].text += `\n:flag-${t.country}: ${t.time}`;
     }
   } else {
-    const t = utilService.getTime();
+    let t = param ? utilService.getTimeBySearch(param) : utilService.getTime();
     attachment = [{
       'text': `:${t.country}: ${t.time}`,
       'color': '#000000'
@@ -52,11 +54,7 @@ const timeCommand = function (param, cb) {
   let msg = param.baseMsg;
   let textParsed = param.textParsed;
   msg['text'] = ':clock3: `WHAT TIME IS IT?`';
-  let isAllTime = false;
-  if (textParsed[2] === '모두' || textParsed[2] === 'all') {
-    isAllTime = true;
-  }
-  msg['attachments'] = getTimeAttachment(isAllTime);
+  msg['attachments'] = getTimeAttachment(textParsed[2]);
   cb(msg);
 };
 
@@ -99,6 +97,43 @@ const conchCommand = function (param, cb) {
   msg['attachments'] = [attachment];
   cb(msg);
 };
+function jiraInfoCommandValidator(textParsed) {
+  if (textParsed.length < 3) {
+    return false;
+  }
+  let onOffStr = textParsed[2].toLowerCase();
+  if (!(onOffStr === 'on' || onOffStr === 'off')) {
+    return false;
+  }
+  return true;
+}
+const jiraInfoCommand = function (params, cb) {
+  let msg = params.baseMsg;
+  let textParsed = params.textParsed;
+  let channel = params.event.channel;
+  msg['text'] = 'JIRA info On/Off';
+
+  if (jiraInfoCommandValidator(textParsed) === false) {
+    msg['text'] = 'please enter the [on or off]';
+    return cb(msg);
+  }
+
+  let onOffStr = textParsed[2].toLowerCase();
+  let isOn = (onOffStr === 'on') ? true : false;
+  let info = {channel: channel, isOn: isOn};
+  dbService.setJiraInfo(info, (res) => {
+    if (res === undefined) {
+      msg['text'] = 'error occured';
+      return cb(msg);
+    }
+    let att = {
+      color: isOn ? 'good' : 'danger',
+      text: isOn ? 'JIRA info on' : 'JIRA info off'
+    };
+    msg['attachments'] = [att];
+    cb(msg);
+  });
+};
 
 const getCommandList = function () {
   const commandList = {
@@ -106,7 +141,8 @@ const getCommandList = function () {
     'help': ['help', '도움', helpCommand],
     'time': ['time', '시간', timeCommand],
     'jira-status': ['jira-status', '지라상태', jiraStatusCommand],
-    'conch': ['conch', '소라고둥', conchCommand]
+    'conch': ['conch', '소라고둥', conchCommand],
+    'jira-info': ['jira-info', '지라정보', jiraInfoCommand]
   };
   return commandList;
 };

@@ -48,7 +48,7 @@ const makeAttachment = function (data, cb) {
     'fields': [
       {
         'title': 'Priority',
-        'value': data.priority,
+        'value': `:${data.priority}:`,
         'short': true
       }, {
         'title': 'Status',
@@ -78,6 +78,9 @@ const makeChangelogAttachment = function (data, cb) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
+  let assignee = data.fields.assignee;
+  let cf = data.fields.customfield_10503;
+  let userName = data.user.displayName;
   attachment = {
     'color': data.issueColor,
     'title': `[${data.key}] ${data.fields.summary}`,
@@ -86,18 +89,22 @@ const makeChangelogAttachment = function (data, cb) {
       {
         'title': 'Status',
         'value': data.statusString,
-        'short': false
+        'short': true
+      }, {
+        'title': 'Change By',
+        'value': userName,
+        'short': true
       }, {
         'title': 'Priority',
-        'value': data.fields.priority.name,
+        'value': `:${data.fields.priority.name}:`,
         'short': true
       }, {
         'title': 'Severity',
-        'value': data.fields.customfield_10503.value,
+        'value': cf === undefined ? 'None' : cf.value,
         'short': true
       }, {
         'title': 'Assignee',
-        'value': data.fields.assignee === null ? 'Unassigned' : data.fields.assignee.displayName,
+        'value': assignee === null ? 'Unassigned' : assignee.displayName,
         'short': true
       }, {
         'title': 'Reporter',
