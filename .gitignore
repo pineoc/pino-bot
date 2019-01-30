@@ -74,3 +74,4 @@ typings/
 conf/slack.json
 conf/jira.json
 conf/db.json
+conf/svn.json

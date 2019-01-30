@@ -1,5 +1,6 @@
 const assert = require('assert');
 const utilService = require('../service/utilService');
+const svnService = require('../service/svnService');
 const moment = require('moment-timezone');
 
 describe('Util time function call test', function () {
@@ -37,6 +38,17 @@ describe('Util time function call test', function () {
       const time = utilService.getTimeBySearch('111');
       const noDataFormat = {time: 'invalid country code', country: 'question'};
       assert.deepEqual(time, noDataFormat);
+    });
+  });
+});
+
+describe('svn function call test', function() {
+  describe('svn getLog test', function () {
+    it('svn getLog not null', function (done) {
+      svnService.getSvnLog(1, (err, result) => {
+        assert.notEqual(result, null);
+        done();
+      });
     });
   });
 });
