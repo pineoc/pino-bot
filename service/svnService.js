@@ -1,16 +1,20 @@
-const Client = require('svn-spawn');
+const svnUltimate = require('node-svn-ultimate');
 const svnConf = require('../conf/svn.json');
-const client = new Client({
-  cwd: svnConf.url,
-  username: svnConf.id,
-  password: svnConf.pwd
-});
+
 const getSvnLog = function (revision, cb) {
-  client.getLog(`-r ${revision}`, (err, result) => {
-    cb(err, result);
+  const option = {revision, verbose: true};
+  svnUltimate.commands.log(svnConf.url, option, function(err, rev) {
+    //console.log(option, rev);
+    cb(err, rev);
+  });
+};
+const getSvnHeadRevision = function (cb) {
+  svnUltimate.util.getRevision(svnConf.url, function (err, rev) {
+    cb(err, rev);
   });
 };
 
 module.exports = {
-  getSvnLog
+  getSvnLog,
+  getSvnHeadRevision
 };

@@ -46,6 +46,14 @@ describe('svn function call test', function() {
   describe('svn getLog test', function () {
     it('svn getLog not null', function (done) {
       svnService.getSvnLog(1, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+  });
+  describe('svn get HEAD log', function () {
+    it('svn getHeadLog not null', function (done) {
+      svnService.getSvnHeadRevision(function (err, result) {
         assert.notEqual(result, null);
         done();
       });
