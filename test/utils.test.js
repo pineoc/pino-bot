@@ -45,6 +45,12 @@ describe('Util time function call test', function () {
 describe('svn function call test', function() {
   describe('svn getLog test', function () {
     it('svn getLog not null', function (done) {
+      svnService.getSvnLog(7, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog not null', function (done) {
       svnService.getSvnLog(1, (err, result) => {
         assert.notEqual(result, undefined);
         done();
