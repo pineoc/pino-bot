@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var jiraRouter = require('./routes/jira');
 var slackRouter = require('./routes/slack');
+var slackCmdRouter = require('./routes/slack-command');
 var testRouter = require('./routes/test');
 
 var app = express();
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/slack-cmd', slackCmdRouter);
 app.use('/jira', jiraRouter);
 app.use('/test', testRouter);
 

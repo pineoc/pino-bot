@@ -45,14 +45,32 @@ describe('Util time function call test', function () {
 describe('svn function call test', function() {
   describe('svn getLog test', function () {
     it('svn getLog not null', function (done) {
+      svnService.getSvnLog(1, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog not null', function (done) {
       svnService.getSvnLog(7, (err, result) => {
         assert.notEqual(result, undefined);
         done();
       });
     });
     it('svn getLog not null', function (done) {
-      svnService.getSvnLog(1, (err, result) => {
+      svnService.getSvnLog(8, (err, result) => {
         assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog error on negative number', function (done) {
+      svnService.getSvnLog(-1, (err, result) => {
+        assert.equal(result, null);
+        done();
+      });
+    });
+    it('svn getLog error on large number', function (done) {
+      svnService.getSvnLog(999999, (err, result) => {
+        assert.equal(result, null);
         done();
       });
     });

@@ -116,6 +116,31 @@ const makeChangelogAttachment = function (data, cb) {
   };
   cb(attachment);
 };
+const makeAttachmentSvn = function(data, cb) {
+  let attachment = {};
+  if (data.err || data === null) {
+    attachment = {'title': 'Revision Does Not Exist', 'color': '#000000'};
+    return cb([attachment]);
+  }
+  attachment = {
+    'color': '#36a64f',
+    'author_name': `Author: ${data.author}`,
+    'title': `Revision: ${data.revision}`,
+    'text': data.msg,
+    'fields': [{'title': 'date', 'value': data.date}],
+    'ts': data.ts
+  };
+  let changedText = '';
+  for (let i = 0; i < data.paths.length; i++) {
+    let p = data.paths[i];
+    changedText += `[${p.action}] ${p.path}\n`;
+  }
+  let changedAttachment = {
+    'title': 'Changed path',
+    'text': changedText
+  };
+  cb([attachment, changedAttachment]);
+};
 
 module.exports = {
   slackConfig,
@@ -123,5 +148,6 @@ module.exports = {
   checkTextForJiraTicket,
   sendMessage,
   makeAttachment,
-  makeChangelogAttachment
+  makeChangelogAttachment,
+  makeAttachmentSvn
 };
