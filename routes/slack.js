@@ -46,14 +46,14 @@ const sendJiraInfoMessage = function (eventInfo) {
 };
 
 slackService.slackEvents.on('message', (event) => {
-  // slack bot events
-  if (event.user === undefined)
+  // Ignore when slack bot events OR thread message
+  if (event.user === undefined || event.thread_ts)
     return;
-  // Check jira info off key included on msg
+  // Ignore when jira info off key included on msg 
   if (jiraService.isIncludeJiraInfoOffKey(event.text))
     return;
 
-  // Check on db channel jira info isOn
+  // Send jira info on db channel isOn == true
   dbService.getJiraInfoChannel({channel: event.channel}, (res) => {
     if (res === undefined || res.isOn) {
       sendJiraInfoMessage(event);
