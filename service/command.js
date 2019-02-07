@@ -19,13 +19,13 @@ const getHelpText = function () {
 };
 const hiCommand = function (param, cb) {
   let msg = param.baseMsg;
-  msg['text'] = 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `help`';
+  msg.text = 'Hi, Hello, 만나서 반가워! :wave:\n> Manual: `도움` or `help`';
   cb(msg);
 };
 
 const helpCommand = function (param, cb) {
   let msg = param.baseMsg;
-  msg['text'] = getHelpText();
+  msg.text = getHelpText();
   cb(msg);
 };
 const getTimeAttachment = function (param) {
@@ -53,8 +53,8 @@ const getTimeAttachment = function (param) {
 const timeCommand = function (param, cb) {
   let msg = param.baseMsg;
   let textParsed = param.textParsed;
-  msg['text'] = ':clock3: `WHAT TIME IS IT?`';
-  msg['attachments'] = getTimeAttachment(textParsed[2]);
+  msg.text = ':clock3: `WHAT TIME IS IT?`';
+  msg.attachments = getTimeAttachment(textParsed[2]);
   cb(msg);
 };
 
@@ -65,9 +65,9 @@ const jiraStatusCommand = function (param, cb) {
     'ERROR': 'danger',
     'STOPPING': 'danger'
   };
-  msg['text'] = 'JIRA status';
+  msg.text = 'JIRA status';
   jiraService.getJiraStatus((err, res) => {
-    msg['attachments'] = [{
+    msg.attachments = [{
       color: statusColor[res.state],
       text: `*${res.state}*`
     }];
@@ -79,7 +79,7 @@ const conchCommand = function (param, cb) {
   let msg = param.baseMsg;
   let textParsed = param.textParsed;
   if (textParsed.length < 3) {
-    msg['text'] = ':shell: Huh?';
+    msg.text = ':shell: Huh?';
     return cb(msg);
   }
 
@@ -88,13 +88,13 @@ const conchCommand = function (param, cb) {
     title: ':shell: Magic Conch 마법의 소라고둥 :shell:'
   };
   if (utilService.getConchDecision()) {
-    attachment['color'] = 'good';
-    attachment['text'] = 'Yes(그래)\n';
+    attachment.color = 'good';
+    attachment.text = 'Yes(그래)\n';
   } else {
-    attachment['color'] = 'danger';
-    attachment['text'] = 'No(아니)\nNope Nope Nope';
+    attachment.color = 'danger';
+    attachment.text = 'No(아니)\nNope Nope Nope';
   }
-  msg['attachments'] = [attachment];
+  msg.attachments = [attachment];
   cb(msg);
 };
 function jiraInfoCommandValidator(textParsed) {
@@ -111,10 +111,10 @@ const jiraInfoCommand = function (params, cb) {
   let msg = params.baseMsg;
   let textParsed = params.textParsed;
   let channel = params.event.channel;
-  msg['text'] = 'JIRA info On/Off';
+  msg.text = 'JIRA info On/Off';
 
   if (jiraInfoCommandValidator(textParsed) === false) {
-    msg['text'] = 'please enter the [on or off]';
+    msg.text = 'please enter the [on or off]';
     return cb(msg);
   }
 
@@ -123,14 +123,14 @@ const jiraInfoCommand = function (params, cb) {
   let info = {channel: channel, isOn: isOn};
   dbService.setJiraInfo(info, (res) => {
     if (res === undefined) {
-      msg['text'] = 'error occured';
+      msg.text = 'error occured';
       return cb(msg);
     }
     let att = {
       color: isOn ? 'good' : 'danger',
       text: isOn ? 'JIRA info on' : 'JIRA info off'
     };
-    msg['attachments'] = [att];
+    msg.attachments = [att];
     cb(msg);
   });
 };
