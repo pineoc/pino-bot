@@ -20,6 +20,7 @@
   "testProjectKey":"PROJ",
   "testProjectTicket":"PROJ-1",
   "jiraStatusChannel": "AAAAAAAA",
+  "jiraOffKey": "!nj",
   "jiraTracker": [{
     "trackerDesc": "Bug webhook sample",
     "webhookId": "1",

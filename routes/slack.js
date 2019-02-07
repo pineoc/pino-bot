@@ -44,11 +44,16 @@ const sendJiraInfoMessage = function (eventInfo) {
     });
   });
 };
+
 slackService.slackEvents.on('message', (event) => {
   // slack bot events
   if (event.user === undefined)
     return;
-  
+  // Check jira info off key included on msg
+  if (jiraService.isIncludeJiraInfoOffKey(event.text))
+    return;
+
+  // Check on db channel jira info isOn
   dbService.getJiraInfoChannel({channel: event.channel}, (res) => {
     if (res === undefined || res.isOn) {
       sendJiraInfoMessage(event);

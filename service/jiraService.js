@@ -78,11 +78,17 @@ const getJiraStatus = function (cb) {
   });
 };
 
+const isIncludeJiraInfoOffKey = function (str) {
+  const offKey = jiraConfig.jiraOffKey || '!nj';
+  return str.includes(offKey);
+};
+
 module.exports = {
   jiraConfig,
   getIssueByKey,
   getIssueByKeyFiltered,
   doTransitionIssue,
   getTransitions,
-  getJiraStatus
+  getJiraStatus,
+  isIncludeJiraInfoOffKey
 };
