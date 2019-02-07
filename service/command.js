@@ -5,7 +5,7 @@ const dbService = require('./db');
 const getHelpText = function () {
   let canDoText = '*Can Do*\n';
   const commandDescText = {
-    '`JIRA ticket info`': 'JIRA Ticket Key included on message',
+    '`JIRA ticket info`': `JIRA Ticket Key included on message\n> if \`${jiraService.jiraConfig.jiraOffKey||'!nj'}\` is included, jira info not displayed`,
     '`Time`': '@helper [time or 시간] [all or 모두 or 국가(country)]\n> country: kr, cn, jp, nl, us(ny, la)',
     '`jira-status`': '@helper [jira-status or 지라상태]',
     '`conch`': '@helper [conch or 소라고둥] question',
