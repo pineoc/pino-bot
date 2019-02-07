@@ -34,7 +34,7 @@ let pwd = process.argv[3];
 
 // get jira.json file
 fs.readFile(jsonConfPath, 'utf8', function(error, data) {
-  if (error) {throw error};
+  if (error) {throw error;}
   let jiraConf = JSON.parse(data);
   // make base64
   // id:password
@@ -42,9 +42,8 @@ fs.readFile(jsonConfPath, 'utf8', function(error, data) {
   console.log('hashed:', hash);
   // set hash on jiraConf file
   jiraConf.basicAuthBase64 = hash;
-  fs.writeFile(jsonConfPath, JSON.stringify(jiraConf), 'utf8', function(err, data){
-    if (error) {throw error};
+  fs.writeFile(jsonConfPath, JSON.stringify(jiraConf, null, 2), 'utf8', function(err, data){
+    if (error) {throw error;}
     console.log('Change auth complete!');
   });
 });
-

@@ -60,8 +60,8 @@ const getTransitions = function (issueKey, cb) {
     }
     const tData = data.transitions.map(obj => {
       let mObj = {};
-      mObj['tId'] = obj.id;
-      mObj['tName'] = obj.name;
+      mObj.tId = obj.id;
+      mObj.tName = obj.name;
       return mObj;
     });
     cb(tData);
