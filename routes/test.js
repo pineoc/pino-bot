@@ -9,8 +9,18 @@ const dbService = require('../service/db');
 // This argument can be a channel ID, a DM ID, a MPDM ID, or a group ID
 const conversationId = slackService.slackConfig.testChannelID;
 
+router.get('/', (req, res) => {
+  res.send('hello test');
+});
+
 router.get('/hello', (req, res) => {
-  slackService.sendMessage({ channel: conversationId, text: 'Hello there' }, (result) => {
+  slackService.sendMessage({channel: conversationId, text: 'Hello there'}, (result) => {
+    res.send(result);
+  });
+});
+
+router.post('/send-text', (req, res) => {
+  slackService.sendMessage({channel: conversationId, text: req.body.text}, result => {
     res.send(result);
   });
 });

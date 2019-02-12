@@ -5,14 +5,16 @@ const jiraService = require('../service/jiraService');
 const commandModule = require('../service/command');
 const dbService = require('../service/db');
 
-router.get('/', function (req, res) {
+let index = function (req, res) {
   res.send('slack router index');
-});
+};
+router.get('/', index);
 
 // interactive Component listener
-router.post('/action-endpoint', function (req, res) {
+let actionEndpoint = function (req, res) {
   res.send('action!');
-});
+};
+router.post('/action-endpoint', actionEndpoint);
 
 router.use('/events', slackService.slackEvents.expressMiddleware());
 
@@ -45,7 +47,7 @@ const sendJiraInfoMessage = function (eventInfo) {
   });
 };
 
-slackService.slackEvents.on('message', (event) => {
+const slackMessage = function (event) {
   // Ignore when slack bot events OR thread message
   if (event.user === undefined || event.thread_ts)
     return;
@@ -59,7 +61,7 @@ slackService.slackEvents.on('message', (event) => {
       sendJiraInfoMessage(event);
     }
   });
-});
+};
 
 const slackCommand = function (event) {
   // add app_mention event type listener
@@ -80,6 +82,7 @@ const slackCommand = function (event) {
   }
 };
 
+slackService.slackEvents.on('message', slackMessage);
 slackService.slackEvents.on('app_mention', slackCommand);
 slackService.slackEvents.on('error', console.error);
 

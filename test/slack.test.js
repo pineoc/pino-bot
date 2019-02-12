@@ -34,8 +34,8 @@ describe('slackService module test', function () {
     it('Should not get jira ticket on onenote: URL', function () {
       slackService.checkTextForJiraTicket(`https://a.sharepoint.com/sites/a/_layouts/OneNote.aspx?id=%2Fsites%2Fa%2FShared%20Documents%2Fa%2Fa_Dev_2018&wd=target%281.%2FLive.one%7CF9ECF82E-7C50-4816-8D6C-611FCC564668%2F4.8.3.2%1C975C8F9C-EC7E-4EF5-8F4E-36FF57FFCA0C%2F%29
       onenote:https://a.sharepoint.com/sites/a/Shared%20Documents/a_Dev_/a_Dev_/1./Live.one#4.8.3.2&section-id={F9ECF842-7C51-4816-8D6C-611FCC564668}&page-id={925C8F9C-EA7E-4EF5-8F4E-36FC57FFCA0C}&end`, (res) => {
-        assert.equal(res, null);
-      });
+          assert.equal(res, null);
+        });
     });
   });
 });
