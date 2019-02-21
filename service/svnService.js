@@ -3,29 +3,38 @@ const svnUltimate = require('node-svn-ultimate');
 const svnConf = require('../conf/svn.json');
 const util = require('../service/utilService');
 
-function makeRevisionData (rev) {
-  let result = Object.assign({}, rev.logentry);
-  // make default data setting
-  result.revision = result.$.revision; // make revision key
-  delete result.$; // remove $ key
+function makePaths (result) {
+  let res = result;
   // path data setting
-  let paths = Object.assign({}, result.paths.path);
-  let pathsLenght = result.paths.path.length;
+  let paths = Object.assign({}, res.paths.path);
+  let pathsLenght = res.paths.path.length;
   if (pathsLenght === undefined) {
-    paths = [result.paths.path];
+    paths = [res.paths.path];
     pathsLenght = 1;
   }
   // check path length for one modified revision
-  delete result.paths;
-  result.paths = [];
+  delete res.paths;
+  res.paths = [];
   // paths = [{path: 'a.txt', action: 'M/A/D/R'},...]
   for(let i = 0; i < pathsLenght; i++) {
     let path = paths[i];
     let newPath = {};
     newPath.path = path._;
     newPath.action = path.$.action;
-    result.paths.push(newPath);
+    res.paths.push(newPath);
   }
+  return res.paths;
+}
+
+function makeRevisionData (rev) {
+  let result = Object.assign({}, rev.logentry);
+  // make default data setting
+  result.revision = result.$.revision; // make revision key
+  delete result.$; // remove $ key
+  if (result.paths) {
+    result.paths = makePaths(result);
+  }
+  
   let time = moment.utc(result.date).unix();
   let date = util.getTimeBySearch('seoul').time;
   result.ts = time;

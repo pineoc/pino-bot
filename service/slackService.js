@@ -131,14 +131,18 @@ const makeAttachmentSvn = function(data, cb) {
     'ts': data.ts
   };
   let changedText = '';
-  for (let i = 0; i < data.paths.length; i++) {
-    let p = data.paths[i];
-    changedText += `[${p.action}] ${p.path}\n`;
+  let changedAttachment = {};
+  if (data.paths) {
+    for (let i = 0; i < data.paths.length; i++) {
+      let p = data.paths[i];
+      changedText += `[${p.action}] ${p.path}\n`;
+    }
+    changedAttachment = {
+      'title': 'Changed path',
+      'text': changedText
+    };
   }
-  let changedAttachment = {
-    'title': 'Changed path',
-    'text': changedText
-  };
+
   cb([attachment, changedAttachment]);
 };
 
