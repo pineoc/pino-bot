@@ -10,12 +10,6 @@ let index = function (req, res) {
 };
 router.get('/', index);
 
-// interactive Component listener
-let actionEndpoint = function (req, res) {
-  res.send('action!');
-};
-router.post('/action-endpoint', actionEndpoint);
-
 router.use('/events', slackService.slackEvents.expressMiddleware());
 
 const getMakeAttachmentPromises = function (data) {

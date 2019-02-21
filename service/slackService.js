@@ -123,11 +123,25 @@ const makeAttachmentSvn = function(data, cb) {
     return cb([attachment]);
   }
   attachment = {
+    'callback_id': 'svn-log',
     'color': '#36a64f',
     'author_name': `Author: ${data.author}`,
     'title': `Revision: ${data.revision}`,
     'text': data.msg,
     'fields': [{'title': 'date', 'value': data.date}],
+    'actions': [{
+      'name': 'svn',
+      'text': 'Delete',
+      'style': 'danger',
+      'type': 'button',
+      'value': 'delete',
+      'confirm': {
+        'title': 'Delete SVN Message',
+        'text': 'Are you sure you want to delete this message?',
+        'ok_text': 'Yes',
+        'dismiss_text': 'No'
+      }
+    }],
     'ts': data.ts
   };
   let changedText = '';
