@@ -3,7 +3,7 @@ var router = express.Router();
 const slackService = require('../service/slackService');
 const svnService = require('../service/svnService');
 
-function svnRequestCommand(channelId, userId, commandText) {
+function svnRequestCommand(channelId, userId, commandText, cb) {
   let requestRev = isNaN(parseInt(commandText)) ? -1 : parseInt(commandText);
   let message = {
     channel: channelId,
@@ -15,11 +15,11 @@ function svnRequestCommand(channelId, userId, commandText) {
     data.err = err;
     slackService.makeAttachmentSvn(data, function(attachment) {
       message.attachments = attachment;
-      slackService.sendMessage(message);
+      slackService.sendMessage(message, cb);
     });
   });
 }
-function svnInfoCommand(channelId, userId, commandText) {
+function svnInfoCommand(channelId, userId, commandText, cb) {
   let requestRev = isNaN(parseInt(commandText)) ? -1 : parseInt(commandText);
   let message = {
     channel: channelId,
@@ -31,27 +31,41 @@ function svnInfoCommand(channelId, userId, commandText) {
     data.err = err;
     slackService.makeAttachmentSvn(data, function(attachment) {
       message.attachments = attachment;
-      slackService.sendMessage(message);
+      slackService.sendMessage(message, cb);
     });
   });
 }
 
-router.post('/', function (req, res) {
+function slackCommandDist (req, res) {
   const request = req.body;
   let channelId = request.channel_id;
   let userId = request.user_id;
   let command = request.command;
   let commandText = request.text;
+
   switch (command) {
   case '/merge-request':
-    svnRequestCommand(channelId, userId, commandText);
+    svnRequestCommand(channelId, userId, commandText, function (result) {
+      if (result.ok)
+        res.status(200).send();
+      else
+        res.status(500).send();
+    });
     break;
   case '/svn':
-    svnInfoCommand(channelId, userId, commandText);
+    svnInfoCommand(channelId, userId, commandText, function (result) {
+      if (result.ok)
+        res.status(200).send();
+      else
+        res.status(500).send();
+    });
+    break;
+  default:
+    res.status(500).send('no command');
     break;
   }
-  res.send('');
-});
+}
+router.post('/', slackCommandDist);
 
 // interactive Component listener
 let actionEndpoint = function (req, res) {

@@ -33,9 +33,13 @@ const sendMessage = function (msgObj, cb) {
     });
 };
 
+function isJiraDataExist (data) {
+  return !(data.errorMessages || data.key === undefined);
+}
+
 const makeAttachment = function (data, cb) {
   let attachment;
-  if (data.errorMessages || data.key === undefined) {
+  if (isJiraDataExist(data) === false) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
@@ -74,7 +78,7 @@ const makeAttachment = function (data, cb) {
 };
 const makeChangelogAttachment = function (data, cb) {
   let attachment;
-  if (data.errorMessages || data.key === undefined) {
+  if (isJiraDataExist(data) === false) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
