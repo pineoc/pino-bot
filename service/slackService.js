@@ -33,9 +33,13 @@ const sendMessage = function (msgObj, cb) {
     });
 };
 
+function isJiraDataExist (data) {
+  return !(data.errorMessages || data.key === undefined);
+}
+
 const makeAttachment = function (data, cb) {
   let attachment;
-  if (data.errorMessages || data.key === undefined) {
+  if (isJiraDataExist(data) === false) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
@@ -74,7 +78,7 @@ const makeAttachment = function (data, cb) {
 };
 const makeChangelogAttachment = function (data, cb) {
   let attachment;
-  if (data.errorMessages || data.key === undefined) {
+  if (isJiraDataExist(data) === false) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
@@ -116,6 +120,49 @@ const makeChangelogAttachment = function (data, cb) {
   };
   cb(attachment);
 };
+const makeAttachmentSvn = function(data, cb) {
+  let attachment = {};
+  if (data.err || data === null) {
+    attachment = {'title': 'Revision Does Not Exist', 'color': '#000000'};
+    return cb([attachment]);
+  }
+  attachment = {
+    'callback_id': 'svn-log',
+    'color': '#36a64f',
+    'author_name': `Author: ${data.author}`,
+    'title': `Revision: ${data.revision}`,
+    'text': data.msg,
+    'fields': [{'title': 'date', 'value': data.date}],
+    'actions': [{
+      'name': 'svn',
+      'text': 'Delete',
+      'style': 'danger',
+      'type': 'button',
+      'value': 'delete',
+      'confirm': {
+        'title': 'Delete SVN Message',
+        'text': 'Are you sure you want to delete this message?',
+        'ok_text': 'Yes',
+        'dismiss_text': 'No'
+      }
+    }],
+    'ts': data.ts
+  };
+  let changedText = '';
+  let changedAttachment = {};
+  if (data.paths) {
+    for (let i = 0; i < data.paths.length; i++) {
+      let p = data.paths[i];
+      changedText += `[${p.action}] ${p.path}\n`;
+    }
+    changedAttachment = {
+      'title': 'Changed path',
+      'text': changedText
+    };
+  }
+
+  cb([attachment, changedAttachment]);
+};
 
 module.exports = {
   slackConfig,
@@ -123,5 +170,6 @@ module.exports = {
   checkTextForJiraTicket,
   sendMessage,
   makeAttachment,
-  makeChangelogAttachment
+  makeChangelogAttachment,
+  makeAttachmentSvn
 };

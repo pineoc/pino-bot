@@ -27,6 +27,10 @@ describe('system modules install check', function() {
       const se = require('@slack/events-api');
       assert.notEqual(se, undefined);
     });
+    it('[check] svn-spawn', function() {
+      const svn = require('svn-spawn');
+      assert.notEqual(svn, undefined);
+    });
   });
 });
 

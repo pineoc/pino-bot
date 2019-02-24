@@ -1,5 +1,6 @@
 const assert = require('assert');
 const utilService = require('../service/utilService');
+const svnService = require('../service/svnService');
 const moment = require('moment-timezone');
 
 describe('Util time function call test', function () {
@@ -37,6 +38,49 @@ describe('Util time function call test', function () {
       const time = utilService.getTimeBySearch('111');
       const noDataFormat = {time: 'invalid country code', country: 'question'};
       assert.deepEqual(time, noDataFormat);
+    });
+  });
+});
+
+describe('svn function call test', function() {
+  describe('svn getLog test', function () {
+    it('svn getLog not null', function (done) {
+      svnService.getSvnLog(1, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog not null', function (done) {
+      svnService.getSvnLog(7, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog not null', function (done) {
+      svnService.getSvnLog(8, (err, result) => {
+        assert.notEqual(result, undefined);
+        done();
+      });
+    });
+    it('svn getLog error on negative number', function (done) {
+      svnService.getSvnLog(-1, (err, result) => {
+        assert.equal(result, null);
+        done();
+      });
+    });
+    it('svn getLog error on large number', function (done) {
+      svnService.getSvnLog(999999, (err, result) => {
+        assert.equal(result, null);
+        done();
+      });
+    });
+  });
+  describe('svn get HEAD log', function () {
+    it('svn getHeadLog not null', function (done) {
+      svnService.getSvnHeadRevision(function (err, result) {
+        assert.notEqual(result, null);
+        done();
+      });
     });
   });
 });
