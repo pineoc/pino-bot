@@ -86,7 +86,7 @@ function actionEndpoint (req, res) {
       'text': 'Sorry, that didn\'t work. Please try again.'
     });
   }
-};
+}
 router.post('/action-endpoint', actionEndpoint);
 
 module.exports = router;
