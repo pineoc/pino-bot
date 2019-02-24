@@ -3,40 +3,51 @@ var router = express.Router();
 const slackService = require('../service/slackService');
 const svnService = require('../service/svnService');
 
-function svnRequestCommand(channelId, userId, commandText, cb) {
-  let requestRev = isNaN(parseInt(commandText)) ? -1 : parseInt(commandText);
-  let message = {
-    channel: channelId,
-    text: `Merge requested revision by <@${userId}>`,
-    attachments: []
-  };
-
-  svnService.getSvnLog(requestRev, function(err, data) {
-    data.err = err;
-    slackService.makeAttachmentSvn(data, function(attachment) {
-      message.attachments = attachment;
-      slackService.sendMessage(message, cb);
-    });
-  });
+function getRevision (rev) {
+  return isNaN(parseInt(rev)) ? -1 : parseInt(rev);
 }
-function svnInfoCommand(channelId, userId, commandText, cb) {
-  let requestRev = isNaN(parseInt(commandText)) ? -1 : parseInt(commandText);
+
+function svnCmdMessageBuilder (msgObj, rev, cb) {
   let message = {
-    channel: channelId,
-    text: `Requested revision by <@${userId}>`,
+    channel: msgObj.channelId,
+    text: `${msgObj.text} <@${msgObj.userId}>`,
     attachments: []
   };
 
-  svnService.getSvnLog(requestRev, function(err, data) {
+  svnService.getSvnLog(rev, function(err, data) {
     data.err = err;
     slackService.makeAttachmentSvn(data, function(attachment) {
       message.attachments = attachment;
-      slackService.sendMessage(message, cb);
+      cb(message);
     });
   });
 }
 
-function slackCommandDist (req, res) {
+function svnMergeRequestCmd(msg, cb) {
+  let requestRev = getRevision(msg.commandText);
+  msg.text = 'Merge requested revision by';
+
+  svnCmdMessageBuilder(msg, requestRev, function(svnMsg) {
+    slackService.sendMessage(svnMsg, cb);
+  });
+}
+function svnCmd(msg, cb) {
+  let requestRev = getRevision(msg.commandText);
+  msg.text = 'Requested revision by';
+
+  svnCmdMessageBuilder(msg, requestRev, function(svnMsg) {
+    slackService.sendMessage(svnMsg, cb);
+  });
+}
+
+function responseSender(response, result) {
+  if (result.ok)
+    response.status(200).send();
+  else
+    response.status(500).send();
+}
+
+function slackCommandRouter (req, res) {
   const request = req.body;
   let channelId = request.channel_id;
   let userId = request.user_id;
@@ -45,19 +56,13 @@ function slackCommandDist (req, res) {
 
   switch (command) {
   case '/merge-request':
-    svnRequestCommand(channelId, userId, commandText, function (result) {
-      if (result.ok)
-        res.status(200).send();
-      else
-        res.status(500).send();
+    svnMergeRequestCmd({channelId, userId, commandText}, function (result) {
+      responseSender(res, result);
     });
     break;
   case '/svn':
-    svnInfoCommand(channelId, userId, commandText, function (result) {
-      if (result.ok)
-        res.status(200).send();
-      else
-        res.status(500).send();
+    svnCmd({channelId, userId, commandText}, function (result) {
+      responseSender(res, result);
     });
     break;
   default:
@@ -65,10 +70,10 @@ function slackCommandDist (req, res) {
     break;
   }
 }
-router.post('/', slackCommandDist);
+router.post('/', slackCommandRouter);
 
 // interactive Component listener
-let actionEndpoint = function (req, res) {
+function actionEndpoint (req, res) {
   const payload = JSON.parse(req.body.payload);
   console.warn(payload.actions, payload.callback_id);
   // delete message
