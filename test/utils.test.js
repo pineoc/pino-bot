@@ -64,13 +64,15 @@ describe('svn function call test', function() {
     });
     it('svn getLog error on negative number', function (done) {
       svnService.getSvnLog(-1, (err, result) => {
-        assert.equal(result, null);
+        assert.notEqual(err, null);
+        assert.equal(Object.keys(result).length, 0);
         done();
       });
     });
     it('svn getLog error on large number', function (done) {
       svnService.getSvnLog(999999, (err, result) => {
-        assert.equal(result, null);
+        assert.notEqual(err, null);
+        assert.equal(Object.keys(result).length, 0);
         done();
       });
     });
