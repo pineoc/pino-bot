@@ -33,6 +33,7 @@ describe('End to End Slack apis', function () {
       });
   });
   describe('slack command test', function () {
+    // WARNING: this test need to create svn repo
     it('/merge-request command test', function (done) {
       const sample = {
         token: 'token',
