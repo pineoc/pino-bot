@@ -34,7 +34,8 @@ const webhookMsgCreator = function(data, cb) {
     statusString = `:new: ${issue.fields.status.name}`;
   }
   if (eventType === 'jira:issue_updated') {
-    for (let i = 0, len = changelog.items.length; i < len; i++) {
+    let len = changelog.items ? changelog.items.length : 0;
+    for (let i = 0; i < len; i++) {
       if (changelog.items[i].field === 'status') {
         let clStringFrom = changelog.items[i].fromString;
         let clStringTo  = changelog.items[i].toString;
