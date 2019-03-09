@@ -41,7 +41,7 @@ describe('All function call test', function() {
       const slackService = require('../service/slackService');
 
       // slack service function test
-      slackService.makeAttachment({}, spy);
+      slackService.makeAttachment({}, 0, spy);
       assert.equal(spy.called, true);
     });
   });
