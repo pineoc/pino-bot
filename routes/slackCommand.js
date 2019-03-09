@@ -78,11 +78,12 @@ function actionEndpoint (req, res) {
   // delete message
   if (payload.actions[0].value === 'delete') {
     res.send('> message removed');
-  } else if (payload.actions[0].name === 'jiraInfo') {
+  } else if (payload.actions[0].name.includes('jiraInfo')) {
+    const attachmentIdx = payload.actions[0].name.split(' ')[1];
     const originalMsg = Object.assign({}, payload.original_message);
     const additionalInfo = JSON.parse(payload.actions[0].value);
-    originalMsg.attachments[0].fields = additionalInfo;
-    delete originalMsg.attachments[0].actions;
+    originalMsg.attachments[attachmentIdx].fields = additionalInfo;
+    delete originalMsg.attachments[attachmentIdx].actions;
     res.json(originalMsg);
   } else {
     res.json({

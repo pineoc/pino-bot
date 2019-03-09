@@ -62,7 +62,7 @@ const makeAttachmentFields = function (data) {
   ];
   return fields;
 }; 
-const makeAttachment = function (data, cb) {
+const makeAttachment = function (data, idx, cb) {
   let attachment;
   let attachmentFields;
   if (isJiraDataExist(data) === false) {
@@ -78,7 +78,7 @@ const makeAttachment = function (data, cb) {
     'title': `[${data.key}] ${data.summary}`,
     'title_link': data.issueLink,
     'actions': [{
-      'name': 'jiraInfo',
+      'name': `jiraInfo ${idx}`,
       'text': 'More Info',
       'style': 'primary',
       'type': 'button',

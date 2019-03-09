@@ -14,10 +14,10 @@ router.use('/events', slackService.slackEvents.expressMiddleware());
 
 const getMakeAttachmentPromises = function (data) {
   let promises = [];
-  for (var i = 0, len = data.length; i < len; i++) {
+  for (let i = 0, len = data.length; i < len; i++) {
     let innerPromise = new Promise((resolve) => {
-      jiraService.getIssueByKeyFiltered(data[i], (data) => {
-        slackService.makeAttachment(data, (attData) => {
+      jiraService.getIssueByKeyFiltered(data[i], (d) => {
+        slackService.makeAttachment(d, i, (attData) => {
           resolve(attData);
         });
       });
