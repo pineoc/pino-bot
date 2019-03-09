@@ -48,10 +48,10 @@ const webhookMsgCreator = function(data, cb) {
   if (statusString === undefined) {
     return cb(null);
   }
-  issue['user'] = user;
-  issue['statusString'] = statusString;
-  issue['issueLink'] = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
-  issue['issueColor'] = issueColor;
+  issue.user = user;
+  issue.statusString = statusString;
+  issue.issueLink = `${jiraService.jiraConfig.httpHost}/browse/${issue.key}`;
+  issue.issueColor = issueColor;
 
   slackService.makeChangelogAttachment(issue, (att) => {
     const msg = {

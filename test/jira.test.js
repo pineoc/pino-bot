@@ -44,6 +44,7 @@ describe('jiraService get info test', function () {
 });
 
 describe('jiraService transition test', function () {
+  this.timeout(5000);
   describe('issue getTransition test', function () {
     it('Should get transition data not null', function (done) {
       jiraService.getTransitions(jiraConf.testProjectTicket, function (res) {
