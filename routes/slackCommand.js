@@ -75,10 +75,15 @@ router.post('/', slackCommandRouter);
 // interactive Component listener
 function actionEndpoint (req, res) {
   const payload = JSON.parse(req.body.payload);
-  console.warn(payload.actions, payload.callback_id);
   // delete message
   if (payload.actions[0].value === 'delete') {
     res.send('> message removed');
+  } else if (payload.actions[0].name === 'jiraInfo') {
+    const originalMsg = Object.assign({}, payload.original_message);
+    const additionalInfo = JSON.parse(payload.actions[0].value);
+    originalMsg.attachments[0].fields = additionalInfo;
+    delete originalMsg.attachments[0].actions;
+    res.json(originalMsg);
   } else {
     res.json({
       'response_type': 'ephemeral',

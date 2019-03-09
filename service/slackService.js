@@ -36,43 +36,54 @@ const sendMessage = function (msgObj, cb) {
 function isJiraDataExist (data) {
   return !(data.errorMessages || data.key === undefined);
 }
-
+const makeAttachmentFields = function (data) {
+  let fields = [
+    {
+      'title': 'Priority',
+      'value': `:${data.priority}:`,
+      'short': true
+    }, {
+      'title': 'Status',
+      'value': data.status,
+      'short': true
+    }, {
+      'title': 'Assignee',
+      'value': data.assignee,
+      'short': true
+    }, {
+      'title': 'Reporter',
+      'value': data.reporter,
+      'short': true
+    }, {
+      'title': 'Fix Version',
+      'value': data.fixVersion.join(),
+      'short': false
+    }
+  ];
+  return fields;
+}; 
 const makeAttachment = function (data, cb) {
   let attachment;
+  let attachmentFields;
   if (isJiraDataExist(data) === false) {
     attachment = {'title': 'Issue Does Not Exist', 'color': '#000000'};
     return cb(attachment);
   }
+  attachmentFields = makeAttachmentFields(data);
   attachment = {
+    'callback_id': 'jira-info',
     'author_name': data.issueTypeName,
     'fallback': `[${data.key}] ${data.summary}`,
     'color': data.issueColor,
     'title': `[${data.key}] ${data.summary}`,
     'title_link': data.issueLink,
-    'fields': [
-      {
-        'title': 'Priority',
-        'value': `:${data.priority}:`,
-        'short': true
-      }, {
-        'title': 'Status',
-        'value': data.status,
-        'short': true
-      }, {
-        'title': 'Assignee',
-        'value': data.assignee,
-        'short': true
-      }, {
-        'title': 'Reporter',
-        'value': data.reporter,
-        'short': true
-      }, {
-        'title': 'Fix Version',
-        'value': data.fixVersion.join(),
-        'short': false
-      }
-    ],
-    'footer': 'JIRA & SLACK'
+    'actions': [{
+      'name': 'jiraInfo',
+      'text': 'More Info',
+      'style': 'primary',
+      'type': 'button',
+      'value': JSON.stringify(attachmentFields)
+    }]
   };
   cb(attachment);
 };
