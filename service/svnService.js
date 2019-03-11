@@ -36,9 +36,8 @@ function makeRevisionData (rev) {
   }
   
   let time = moment.utc(result.date).unix();
-  let date = util.getTimeBySearch('seoul').time;
   result.ts = time;
-  result.date = date;
+  result.date = result.date;
 
   return result;
 }
