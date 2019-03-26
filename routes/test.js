@@ -187,5 +187,33 @@ router.get('/db-set-test', (req, res) => {
     res.json(data);
   });
 });
+router.get('/webhook', (req, res, next) => {
+  const query = req.query;
+  const msgObj = {
+    channel: 'CA073K341',
+    attachments: [
+      {
+        'color': 'good',
+        'title': `[Crowdin] File fully translated, ${query.file}`,
+        'title_link': `https://crowdin.com/project/${query.project}`,
+        'fields': [
+          {
+            'title': 'File',
+            'value': query.file,
+            'short': true
+          }, {
+            'title': 'language',
+            'value': query.language,
+            'short': true
+          }
+        ]
+      }
+    ]
+  };
+  slackService.sendMessage(msgObj, (result) => {
+    console.warn(result);
+    res.json(result);
+  });
+});
 
 module.exports = router;

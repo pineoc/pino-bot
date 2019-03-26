@@ -82,8 +82,10 @@ function actionEndpoint (req, res) {
     const attachmentIdx = payload.actions[0].name.split(' ')[1];
     const originalMsg = Object.assign({}, payload.original_message);
     const additionalInfo = JSON.parse(payload.actions[0].value);
+
     originalMsg.attachments[attachmentIdx].fields = additionalInfo;
     delete originalMsg.attachments[attachmentIdx].actions;
+
     res.json(originalMsg);
   } else {
     res.json({
