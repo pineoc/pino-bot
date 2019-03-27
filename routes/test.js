@@ -190,11 +190,11 @@ router.get('/db-set-test', (req, res) => {
 router.get('/webhook', (req, res, next) => {
   const query = req.query;
   const msgObj = {
-    channel: 'CA073K341',
+    channel: 'CHBGL3F29',
     attachments: [
       {
         'color': 'good',
-        'title': `[Crowdin] File fully translated, ${query.file}`,
+        'title': `[Crowdin] Event: ${query.event}`,
         'title_link': `https://crowdin.com/project/${query.project}`,
         'fields': [
           {
@@ -211,7 +211,6 @@ router.get('/webhook', (req, res, next) => {
     ]
   };
   slackService.sendMessage(msgObj, (result) => {
-    console.warn(result);
     res.json(result);
   });
 });
