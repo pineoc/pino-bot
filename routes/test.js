@@ -194,7 +194,7 @@ router.get('/webhook', (req, res, next) => {
     attachments: [
       {
         'color': 'good',
-        'title': `[Crowdin] Event: ${query.event}`,
+        'title': `[Crowdin] ${query.event}`,
         'title_link': `https://crowdin.com/project/${query.project}`,
         'fields': [
           {
