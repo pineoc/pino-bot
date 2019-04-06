@@ -75,9 +75,25 @@ router.post('/', slackCommandRouter);
 // interactive Component listener
 function actionEndpoint (req, res) {
   const payload = JSON.parse(req.body.payload);
+  const payloadType = payload.type;
+  if (payloadType === 'interactive_message') {
+    interactiveMsgActor(payload, (msg) => {
+      res.json(msg);
+    });
+  } else if (payloadType === 'block_actions') {
+    blockMsgActor(req, payload, (msg) => {
+      res.send(msg);
+    });
+  } else {
+    res.status(500).json({});
+  }
+}
+router.post('/action-endpoint', actionEndpoint);
+
+function interactiveMsgActor (payload, cb) {
   // delete message
   if (payload.actions[0].value === 'delete') {
-    res.send('> message removed');
+    cb('> message removed');
   } else if (payload.actions[0].name.includes('jiraInfo')) {
     const attachmentIdx = payload.actions[0].name.split(' ')[1];
     const originalMsg = Object.assign({}, payload.original_message);
@@ -86,15 +102,18 @@ function actionEndpoint (req, res) {
     originalMsg.attachments[attachmentIdx].fields = additionalInfo;
     delete originalMsg.attachments[attachmentIdx].actions;
 
-    res.json(originalMsg);
+    cb(originalMsg);
   } else {
-    res.json({
-      'response_type': 'ephemeral',
-      'replace_original': false,
-      'text': 'Sorry, that didn\'t work. Please try again.'
+    cb({
+      response_type: 'ephemeral',
+      replace_original: false,
+      text: 'Sorry, that didn\'t work. Please try again.'
     });
   }
 }
-router.post('/action-endpoint', actionEndpoint);
+function blockMsgActor (req, payload, cb) {
+  // dialog test
+  slackService.openDialog(req, cb);
+}
 
 module.exports = router;

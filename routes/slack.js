@@ -12,10 +12,25 @@ router.get('/', index);
 
 router.use('/events', slackService.slackEvents.expressMiddleware());
 
+const getBlocksPromises = function (data) {
+  let promises = [];
+  for (let i = 0, len = data.length; i < len; i++) {
+    let innerPromise = new Promise(resolve => {
+      jiraService.getIssueByKeyFiltered(data[i], (d) => {
+        slackService.blockBuilder(d, i, (block) => {
+          resolve(block);
+        });
+      });
+    });
+    promises.push(innerPromise);
+  }
+  return promises;
+};
+
 const getMakeAttachmentPromises = function (data) {
   let promises = [];
   for (let i = 0, len = data.length; i < len; i++) {
-    let innerPromise = new Promise((resolve) => {
+    let innerPromise = new Promise(resolve => {
       jiraService.getIssueByKeyFiltered(data[i], (d) => {
         slackService.makeAttachment(d, i, (attData) => {
           resolve(attData);
@@ -30,12 +45,24 @@ const sendJiraInfoMessage = function (eventInfo) {
   slackService.checkTextForJiraTicket(eventInfo.text, (result) => {
     let message = {
       channel: eventInfo.channel,
-      text: 'JIRA Report',
       attachments: []
     };
     let promises = getMakeAttachmentPromises(result);
     Promise.all(promises).then(function (values) {
       message.attachments = values;
+      slackService.sendMessage(message);
+    });
+  });
+};
+const sendJiraInfoMessageBeta = function (eventInfo) {
+  slackService.checkTextForJiraTicket(eventInfo.text, (result) => {
+    let message = {
+      channel: eventInfo.channel,
+      blocks: []
+    };
+    let promises = getBlocksPromises(result);
+    Promise.all(promises).then(function (values) {
+      message.blocks = values;
       slackService.sendMessage(message);
     });
   });
@@ -48,6 +75,12 @@ const slackMessage = function (event) {
   // Ignore when jira info off key included on msg 
   if (jiraService.isIncludeJiraInfoOffKey(event.text))
     return;
+  
+  // beta function slack jira info
+  if (slackService.isIncludeBetaFlag(event.text)) {
+    sendJiraInfoMessageBeta(event);
+    return;
+  }
 
   // Send jira info on db channel isOn == true
   dbService.getJiraInfoChannel({channel: event.channel}, (res) => {

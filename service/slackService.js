@@ -1,13 +1,14 @@
 const slackConfig = require('../conf/slack.json');
 const { createEventAdapter } = require('@slack/events-api');
 const { WebClient } = require('@slack/client');
+const axios = require('axios');
 const slackEvents = createEventAdapter(slackConfig.signingSecret);
 
 // An access token (from your Slack app or custom integration - xoxp, xoxb, or xoxa)
 const token = slackConfig.slackToken;
 const web = new WebClient(token);
 
-const checkTextForJiraTicket = function (text, cb) {
+function checkTextForJiraTicket (text, cb) {
   // Ref: https://community.atlassian.com/t5/Bitbucket-questions/Regex-pattern-to-match-JIRA-issue-key/qaq-p/233319
   const jiraMatcher = /((?!([A-Z0-9a-z]{1,10})-?$)[A-Z]{1}[A-Z0-9]+-\d+)/g;
   // const jiraMatcher = /((?<!([A-Za-z]{1,10})-?)[A-Z]+-\d+)/g;
@@ -19,7 +20,7 @@ const checkTextForJiraTicket = function (text, cb) {
     // jira ticket string in text
     return cb(t);
   }
-};
+}
 
 // send Message to slack channel
 const sendMessage = function (msgObj, cb) {
@@ -36,7 +37,7 @@ const sendMessage = function (msgObj, cb) {
 function isJiraDataExist (data) {
   return !(data.errorMessages || data.key === undefined);
 }
-const makeAttachmentFields = function (data) {
+function makeAttachmentFields (data) {
   let fields = [
     {
       'title': 'Priority',
@@ -61,7 +62,7 @@ const makeAttachmentFields = function (data) {
     }
   ];
   return fields;
-}; 
+}
 const makeAttachment = function (data, idx, cb) {
   let attachment;
   let attachmentFields;
@@ -175,6 +176,106 @@ const makeAttachmentSvn = function(data, cb) {
   cb([attachment, changedAttachment]);
 };
 
+function blockBuilder (data, idx, cb) {
+  let block = {};
+  if (isJiraDataExist(data) === false) {
+    block = {
+      type: 'section',
+      text: {
+        type: 'mrkdwn',
+        text: '> Issue Does Not Exist'
+      }
+    };
+    return cb(block);
+  }
+
+  // make info block
+  block = {
+    type: 'section',
+    text: {
+      type: 'mrkdwn',
+      text: `<${data.issueLink}|[${data.key}] ${data.summary}>`
+    },
+    accessory: {
+      type: 'button',
+      text: {
+        type: 'plain_text',
+        text: 'More',
+      },
+      value: JSON.stringify(data),
+      action_id: `jiraInfo: ${idx}`
+    }
+  };
+  block.text.text += `\n*[${data.issueTypeName}]*`;
+  block.text.text += ` :${data.priority}:/`;
+  block.text.text += ` \`${data.status}\`/`;
+  block.text.text += ` ${data.assignee}`;
+  cb(block);
+}
+
+function openDialog (req, cb) {
+  const payload = JSON.parse(req.body.payload);
+  const jiraData = JSON.parse(payload.actions[0].value);
+  let dialog = {
+    'callback_id': 'jira-dialog',
+    'title': 'JIRA infos',
+    'submit_label': 'Request',
+    'state': 'Limo',
+    'elements': [
+      {
+        type: 'text',
+        label: 'Title',
+        name: 'info_title',
+        value: jiraData.summary,
+        hint: jiraData.issueLink
+      }, {
+        type: 'textarea',
+        label: 'Description',
+        name: 'info_desc',
+        value: jiraData.description
+      }, {
+        type: 'text',
+        label: 'Priority',
+        name: 'info_priority',
+        value: jiraData.priority
+      }, {
+        type: 'text',
+        label: 'Assignee',
+        name: 'info_assignee',
+        value: jiraData.assignee
+      }, {
+        type: 'textarea',
+        label: 'fix version',
+        name: 'info_fixversion',
+        value: jiraData.fixVersion.join('\\r\\n')
+      }
+    ]
+  };
+  (async () => {
+    try {
+      // Open dialog
+      let tid = payload.trigger_id;
+      const response = await web.dialog.open({ 
+        trigger_id: tid,
+        dialog,
+      });
+    } catch (error) {
+      console.log(error);
+      axios.post(payload.response_url, {
+        response_type: 'ephemeral',
+        replace_original: false,
+        text: `An error occurred while opening the dialog: ${error.message}`,
+      }).catch(console.error);
+    }
+  })();
+  cb(true);
+}
+
+function isIncludeBetaFlag (str) {
+  const betaKey = slackConfig.betaFlag || '!beta';
+  return str.includes(betaKey);
+}
+
 module.exports = {
   slackConfig,
   slackEvents,
@@ -182,5 +283,8 @@ module.exports = {
   sendMessage,
   makeAttachment,
   makeChangelogAttachment,
-  makeAttachmentSvn
+  makeAttachmentSvn,
+  blockBuilder,
+  openDialog,
+  isIncludeBetaFlag
 };
