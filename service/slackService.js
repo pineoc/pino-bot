@@ -242,12 +242,14 @@ function openDialog (req, cb) {
         type: 'text',
         label: 'Assignee',
         name: 'info_assignee',
-        value: jiraData.assignee
+        value: jiraData.assignee,
+        hint: 'Editing is not reflected. :)'
       }, {
         type: 'textarea',
         label: 'fix version',
         name: 'info_fixversion',
-        value: jiraData.fixVersion.join('\\r\\n')
+        value: jiraData.fixVersion.join('\\r\\n'),
+        hint: '편집해도 반영 안됩니다. ㅎㅎ'
       }
     ]
   };
