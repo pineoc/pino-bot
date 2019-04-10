@@ -88,6 +88,6 @@ const reportJiraStatus = function () {
   });
 };
 // check jira status each 5min
-cron.schedule('*/5 * * * *', reportJiraStatus);
+// cron.schedule('*/5 * * * *', reportJiraStatus);
 
 module.exports = router;
