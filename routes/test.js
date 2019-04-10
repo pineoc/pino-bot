@@ -187,28 +187,43 @@ router.get('/db-set-test', (req, res) => {
     res.json(data);
   });
 });
-router.get('/webhook', (req, res, next) => {
+router.get('/webhook', (req, res) => {
   const query = req.query;
-  const msgObj = {
-    channel: 'CHBGL3F29',
-    attachments: [
-      {
-        'color': 'good',
-        'title': `[Crowdin] ${query.event}`,
-        'title_link': `https://crowdin.com/project/${query.project}`,
-        'fields': [
-          {
-            'title': 'File',
-            'value': query.file,
-            'short': true
-          }, {
-            'title': 'language',
-            'value': query.language,
-            'short': true
-          }
-        ]
-      }
-    ]
+  let msgObj = {};
+  // crowdin event
+  if (query.event) {
+    msgObj = {
+      channel: 'CHBGL3F29',
+      attachments: [
+        {
+          'color': 'good',
+          'title': `[Crowdin] ${query.event}`,
+          'title_link': `https://crowdin.com/project/${query.project}`,
+          'fields': [
+            {
+              'title': 'File',
+              'value': query.file,
+              'short': true
+            }, {
+              'title': 'language',
+              'value': query.language,
+              'short': true
+            }
+          ]
+        }
+      ]
+    };
+  }
+  slackService.sendMessage(msgObj, (result) => {
+    res.json(result);
+  });
+});
+router.post('/webhook', (req, res) => {
+  const body = req.body;
+  let msgObj = {};
+  msgObj = {
+    channel: 'CHSM55U93',
+    text: '[TEST]' + JSON.stringify(body)
   };
   slackService.sendMessage(msgObj, (result) => {
     res.json(result);
