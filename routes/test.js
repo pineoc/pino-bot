@@ -201,10 +201,6 @@ router.get('/webhook', (req, res) => {
           'title_link': `https://crowdin.com/project/${query.project}`,
           'fields': [
             {
-              'title': 'File',
-              'value': query.file,
-              'short': true
-            }, {
               'title': 'language',
               'value': query.language,
               'short': true
