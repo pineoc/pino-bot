@@ -1,8 +1,19 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
+const request = require('request');
 const slackService = require('../service/slackService');
 const svnService = require('../service/svnService');
+const jiraService = require('../service/jiraService');
 
+const errorMsg = {
+  response_type: 'ephemeral',
+  replace_original: false,
+  text: 'Sorry, that didn\'t work. Please try again.'
+};
+
+
+
+// svn functions
 function getRevision (rev) {
   return isNaN(parseInt(rev)) ? -1 : parseInt(rev);
 }
@@ -47,6 +58,7 @@ function responseSender(response, result) {
     response.status(500).send();
 }
 
+// slack command router
 function slackCommandRouter (req, res) {
   const request = req.body;
   let channelId = request.channel_id;
@@ -84,6 +96,13 @@ function actionEndpoint (req, res) {
     blockMsgActor(req, payload, (msg) => {
       res.send(msg);
     });
+  } else if (payloadType === 'message_action') {
+    messageActor(payload, (msg) => {
+      let opt = { url: payload.response_url, msg};
+      sendResponseMsgAction(opt, (resCode) => {
+        res.status(resCode).json({});
+      });
+    });
   } else {
     res.status(500).json({});
   }
@@ -104,16 +123,59 @@ function interactiveMsgActor (payload, cb) {
 
     cb(originalMsg);
   } else {
-    cb({
-      response_type: 'ephemeral',
-      replace_original: false,
-      text: 'Sorry, that didn\'t work. Please try again.'
-    });
+    cb(errorMsg);
   }
 }
 function blockMsgActor (req, payload, cb) {
   // dialog test
   slackService.openDialog(req, cb);
+}
+function messageActor (payload, cb) {
+  const msg = payload.message;
+  if (payload.callback_id === 'action_get_jira_info') {
+    slackService.checkTextForJiraTicket(msg.text, (result) => {
+      let message = {
+        response_type: 'ephemeral',
+        text: 'Jira 정보 파밍!',
+        attachments: []
+      };
+
+      let promises = getMakeAttachmentPromises(result);
+      Promise.all(promises).then(function (values) {
+        message.attachments = values;
+        cb(message);
+      });
+    });    
+  }
+}
+function sendResponseMsgAction (opt, cb) {
+  var options = {
+    uri: opt.url,
+    method: 'POST',
+    json: opt.msg
+  };
+  
+  request(options, function (err, response) {
+    if (!err && response.statusCode == 200) {
+      cb(200);
+    } else {
+      cb(response.statusCode);
+    }
+  });
+}
+function getMakeAttachmentPromises (data) {
+  let promises = [];
+  for (let i = 0, len = data.length; i < len; i++) {
+    let innerPromise = new Promise(resolve => {
+      jiraService.getIssueByKeyFiltered(data[i], (d) => {
+        slackService.makeSimpleAttachment(d, i, (attData) => {
+          resolve(attData);
+        });
+      });
+    });
+    promises.push(innerPromise);
+  }
+  return promises;
 }
 
 module.exports = router;

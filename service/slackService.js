@@ -88,6 +88,22 @@ const makeAttachment = function (data, idx, cb) {
   };
   cb(attachment);
 };
+const makeSimpleAttachment = function (data, idx, cb) {
+  let attachment;
+  if (isJiraDataExist(data) === false) {
+    attachment = {'title': 'Issue not found', 'color': '#000000'};
+    return cb(attachment);
+  }
+
+  attachment = {
+    'fallback': `[${data.key}] ${data.summary}`,
+    'color': data.issueColor,
+    'title': `[${data.key}] ${data.summary}`,
+    'title_link': data.issueLink,
+    'text': `*[${data.issueTypeName}]* :${data.priority}:/ \`${data.status}\`/ ${data.assignee}`
+  };
+  cb(attachment);
+}
 const makeChangelogAttachment = function (data, cb) {
   let attachment;
   if (isJiraDataExist(data) === false) {
@@ -284,6 +300,7 @@ module.exports = {
   checkTextForJiraTicket,
   sendMessage,
   makeAttachment,
+  makeSimpleAttachment,
   makeChangelogAttachment,
   makeAttachmentSvn,
   blockBuilder,
