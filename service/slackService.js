@@ -19,6 +19,8 @@ function checkTextForJiraTicket (text, cb) {
   if (t != null && t.length > 0) {
     // jira ticket string in text
     return cb(t);
+  } else {
+    return cb(null);
   }
 }
 
@@ -95,15 +97,19 @@ const makeSimpleAttachment = function (data, idx, cb) {
     return cb(attachment);
   }
 
+  let attachmentText = `*[${data.issueTypeName}]* `;
+  attachmentText += `:${data.priority}:/ `;
+  attachmentText += `\`${data.status}\`/ ${data.assignee}\n`;
+  attachmentText += `fixVer: ${data.fixVersion.join()}`;
   attachment = {
     'fallback': `[${data.key}] ${data.summary}`,
     'color': data.issueColor,
     'title': `[${data.key}] ${data.summary}`,
     'title_link': data.issueLink,
-    'text': `*[${data.issueTypeName}]* :${data.priority}:/ \`${data.status}\`/ ${data.assignee}`
+    'text': attachmentText
   };
   cb(attachment);
-}
+};
 const makeChangelogAttachment = function (data, cb) {
   let attachment;
   if (isJiraDataExist(data) === false) {

@@ -11,8 +11,6 @@ const errorMsg = {
   text: 'Sorry, that didn\'t work. Please try again.'
 };
 
-
-
 // svn functions
 function getRevision (rev) {
   return isNaN(parseInt(rev)) ? -1 : parseInt(rev);
@@ -98,7 +96,7 @@ function actionEndpoint (req, res) {
     });
   } else if (payloadType === 'message_action') {
     messageActor(payload, (msg) => {
-      let opt = { url: payload.response_url, msg};
+      let opt = {url: payload.response_url, msg};
       sendResponseMsgAction(opt, (resCode) => {
         res.status(resCode).json({});
       });
@@ -139,6 +137,9 @@ function messageActor (payload, cb) {
         text: 'Jira 정보 파밍!',
         attachments: []
       };
+      if (!result) {
+        return cb({response_type: 'ephemeral', text: 'Info Not Found'});
+      }
 
       let promises = getMakeAttachmentPromises(result);
       Promise.all(promises).then(function (values) {
