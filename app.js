@@ -3,6 +3,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const Sentry = require('@sentry/node');
+
+Sentry.init({ dsn: 'https://b04a9feb485c4fb88cfc0e726d9415c4@sentry.io/1473067' });
 
 var jiraRouter = require('./routes/jira');
 var slackRouter = require('./routes/slack');
@@ -10,6 +13,10 @@ var slackCmdRouter = require('./routes/slackCommand');
 var testRouter = require('./routes/test');
 
 var app = express();
+// The request handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+// The error handler must be before any other error middleware
+app.use(Sentry.Handlers.errorHandler());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
