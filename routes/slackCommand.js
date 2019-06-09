@@ -86,6 +86,7 @@ router.post('/', slackCommandRouter);
 function actionEndpoint (req, res) {
   const payload = JSON.parse(req.body.payload);
   const payloadType = payload.type;
+  // console.log('action Endpoint payload:', payload);
   if (payloadType === 'interactive_message') {
     interactiveMsgActor(payload, (msg) => {
       res.json(msg);
@@ -94,7 +95,8 @@ function actionEndpoint (req, res) {
     blockMsgActor(req, payload, (msg) => {
       res.send(msg);
     });
-  } else if (payloadType === 'message_action') {
+  } else if (payloadType === 'message_action' || payloadType === 'dialog_submission') {
+    // TODO: dialog submission 로직 분리 필요
     messageActor(payload, (msg) => {
       let opt = {url: payload.response_url, msg};
       sendResponseMsgAction(opt, (resCode) => {
@@ -126,7 +128,7 @@ function interactiveMsgActor (payload, cb) {
 }
 function blockMsgActor (req, payload, cb) {
   // dialog test
-  slackService.openDialog(req, cb);
+  slackService.openJiraInfoDialog(req, cb);
 }
 function messageActor (payload, cb) {
   const msg = payload.message;
@@ -147,6 +149,22 @@ function messageActor (payload, cb) {
         cb(message);
       });
     });    
+  }
+  if (payload.callback_id === 'action_create_jira_issue') {
+    // TODO: dialog submission 로직 분리 필요
+    if (payload.type === 'dialog_submission') {
+      let msg = {
+        response_type: 'ephemeral',
+        text: 'create issue dialog submitted',
+      };
+      msg.text += `\n> ${JSON.stringify(payload.submission)}`;
+
+      cb(msg);
+    } else {
+      slackService.openDialogTest(payload, (result) => {
+        cb({response_type: 'ephemeral', text: 'create issue'});
+      });
+    }
   }
 }
 function sendResponseMsgAction (opt, cb) {

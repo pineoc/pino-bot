@@ -235,7 +235,7 @@ function blockBuilder (data, idx, cb) {
   cb(block);
 }
 
-function openDialog (req, cb) {
+function openJiraInfoDialog (req, cb) {
   const payload = JSON.parse(req.body.payload);
   const jiraData = JSON.parse(payload.actions[0].value);
   let dialog = {
@@ -294,6 +294,45 @@ function openDialog (req, cb) {
   })();
   cb(true);
 }
+function openDialogTest (payload, cb) {
+  let dialog = {
+    'callback_id': payload.callback_id,
+    'title': 'Create Jira issue',
+    'submit_label': 'Request',
+    'state': 'Limo',
+    'elements': [
+      {
+        type: 'text',
+        label: 'Title',
+        name: 'jira_title',
+        hint: 'issue title'
+      }, {
+        type: 'textarea',
+        label: 'Description',
+        name: 'jira_desc',
+        value: payload.message.text
+      }
+    ]
+  };
+  (async () => {
+    try {
+      // Open dialog
+      let tid = payload.trigger_id;
+      const response = await web.dialog.open({ 
+        trigger_id: tid,
+        dialog,
+      });
+    } catch (error) {
+      console.log(error);
+      axios.post(payload.response_url, {
+        response_type: 'ephemeral',
+        replace_original: false,
+        text: `An error occurred while opening the dialog: ${error.message}`,
+      }).catch(console.error);
+    }
+  })();
+  cb(true);
+}
 
 function isIncludeBetaFlag (str) {
   const betaKey = slackConfig.betaFlag || '!beta';
@@ -310,6 +349,7 @@ module.exports = {
   makeChangelogAttachment,
   makeAttachmentSvn,
   blockBuilder,
-  openDialog,
+  openJiraInfoDialog,
+  openDialogTest,
   isIncludeBetaFlag
 };
