@@ -1,4 +1,4 @@
-var cron = require('node-cron');
+// var cron = require('node-cron');
 var express = require('express');
 var router = express.Router();
 const slackService = require('../service/slackService');
@@ -72,21 +72,21 @@ router.post('/webhook', (req, res) => {
   });
 });
 
-const reportJiraStatus = function () {
-  jiraService.getJiraStatus((err, res) => {
-    if (err || res.state === 'ERROR' || res.state === 'STOPPING') {
-      let msg = {
-        channel: jiraConfig.jiraStatusChannel,
-        attachments: [{
-          title: 'JIRA status',
-          text: 'JIRA service not working',
-          color: 'danger'
-        }]
-      };
-      slackService.sendMessage(msg);
-    }
-  });
-};
+// const reportJiraStatus = function () {
+//   jiraService.getJiraStatus((err, res) => {
+//     if (err || res.state === 'ERROR' || res.state === 'STOPPING') {
+//       let msg = {
+//         channel: jiraConfig.jiraStatusChannel,
+//         attachments: [{
+//           title: 'JIRA status',
+//           text: 'JIRA service not working',
+//           color: 'danger'
+//         }]
+//       };
+//       slackService.sendMessage(msg);
+//     }
+//   });
+// };
 // check jira status each 5min
 // cron.schedule('*/5 * * * *', reportJiraStatus);
 
