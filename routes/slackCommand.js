@@ -95,8 +95,15 @@ function actionEndpoint (req, res) {
     blockMsgActor(req, payload, (msg) => {
       res.send(msg);
     });
-  } else if (payloadType === 'message_action' || payloadType === 'dialog_submission') {
-    // TODO: dialog submission 로직 분리 필요
+  } else if (payloadType === 'message_action') {
+    messageActor(payload, (msg) => {
+      let msgObj = Object.assign({}, msg);
+
+      slackService.sendMessage(msgObj, (result) => {
+        responseSender(res, result);
+      });
+    });
+  } else if (payloadType === 'dialog_submission') {
     messageActor(payload, (msg) => {
       let opt = {url: payload.response_url, msg};
       sendResponseMsgAction(opt, (resCode) => {
@@ -135,12 +142,13 @@ function messageActor (payload, cb) {
   if (payload.callback_id === 'action_get_jira_info') {
     slackService.checkTextForJiraTicket(msg.text, (result) => {
       let message = {
-        response_type: 'ephemeral',
+        thread_ts: msg.ts,
         text: 'Jira 정보 파밍!',
+        channel: payload.channel.id,
         attachments: []
       };
       if (!result) {
-        return cb({response_type: 'ephemeral', text: 'Info Not Found'});
+        return cb({text: 'Info Not Found'});
       }
 
       let promises = getMakeAttachmentPromises(result);

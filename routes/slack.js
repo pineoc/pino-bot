@@ -43,6 +43,9 @@ const getMakeAttachmentPromises = function (data) {
 };
 const sendJiraInfoMessage = function (eventInfo) {
   slackService.checkTextForJiraTicket(eventInfo.text, (result) => {
+    if (!result) {
+      return;
+    }
     let message = {
       channel: eventInfo.channel,
       attachments: []
