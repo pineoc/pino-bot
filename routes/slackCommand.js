@@ -100,6 +100,7 @@ function actionEndpoint (req, res) {
       let msgObj = Object.assign({}, msg);
 
       slackService.sendMessage(msgObj, (result) => {
+        console.log(result);
         responseSender(res, result);
       });
     });
@@ -111,7 +112,7 @@ function actionEndpoint (req, res) {
       });
     });
   } else {
-    res.status(500).json({});
+    responseSender(res, {ok: false});
   }
 }
 router.post('/action-endpoint', actionEndpoint);

@@ -284,7 +284,6 @@ function openJiraInfoDialog (req, cb) {
         dialog,
       });
     } catch (error) {
-      console.log(error);
       axios.post(payload.response_url, {
         response_type: 'ephemeral',
         replace_original: false,
@@ -323,7 +322,6 @@ function openDialogTest (payload, cb) {
         dialog,
       });
     } catch (error) {
-      console.log(error);
       axios.post(payload.response_url, {
         response_type: 'ephemeral',
         replace_original: false,
