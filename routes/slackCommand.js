@@ -100,7 +100,6 @@ function actionEndpoint (req, res) {
       let msgObj = Object.assign({}, msg);
 
       slackService.sendMessage(msgObj, (result) => {
-        console.log(result);
         responseSender(res, result);
       });
     });

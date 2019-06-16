@@ -1,7 +1,7 @@
 const slackConfig = require('../conf/slack.json');
 const { createEventAdapter } = require('@slack/events-api');
 const { WebClient } = require('@slack/client');
-const axios = require('axios');
+const request = require('request');
 const slackEvents = createEventAdapter(slackConfig.signingSecret);
 
 // An access token (from your Slack app or custom integration - xoxp, xoxb, or xoxa)
@@ -235,6 +235,24 @@ function blockBuilder (data, idx, cb) {
   cb(block);
 }
 
+async function openDialog (payload, dialog, cb) {
+  try {
+    // Open dialog
+    let tid = payload.trigger_id;
+    const response = await web.dialog.open({
+      trigger_id: tid,
+      dialog,
+    });
+    cb(response);
+  } catch (error) {
+    request.post(payload.response_url).form({
+      response_type: 'ephemeral',
+      replace_original: false,
+      text: `An error occurred while opening the dialog: ${error.message}`,
+    });
+  }
+}
+
 function openJiraInfoDialog (req, cb) {
   const payload = JSON.parse(req.body.payload);
   const jiraData = JSON.parse(payload.actions[0].value);
@@ -275,23 +293,7 @@ function openJiraInfoDialog (req, cb) {
       }
     ]
   };
-  (async () => {
-    try {
-      // Open dialog
-      let tid = payload.trigger_id;
-      const response = await web.dialog.open({ 
-        trigger_id: tid,
-        dialog,
-      });
-    } catch (error) {
-      axios.post(payload.response_url, {
-        response_type: 'ephemeral',
-        replace_original: false,
-        text: `An error occurred while opening the dialog: ${error.message}`,
-      }).catch(console.error);
-    }
-  })();
-  cb(true);
+  openDialog(payload, dialog, cb);
 }
 function openDialogTest (payload, cb) {
   let dialog = {
@@ -313,23 +315,7 @@ function openDialogTest (payload, cb) {
       }
     ]
   };
-  (async () => {
-    try {
-      // Open dialog
-      let tid = payload.trigger_id;
-      const response = await web.dialog.open({ 
-        trigger_id: tid,
-        dialog,
-      });
-    } catch (error) {
-      axios.post(payload.response_url, {
-        response_type: 'ephemeral',
-        replace_original: false,
-        text: `An error occurred while opening the dialog: ${error.message}`,
-      }).catch(console.error);
-    }
-  })();
-  cb(true);
+  openDialog(payload, dialog, cb);
 }
 
 function isIncludeBetaFlag (str) {
