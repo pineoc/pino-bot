@@ -97,10 +97,11 @@ const makeSimpleAttachment = function (data, idx, cb) {
     return cb(attachment);
   }
 
-  let attachmentText = `*[${data.issueTypeName}]* `;
+  let attachmentText = `[${data.issueTypeName}] `;
   attachmentText += `:${data.priority}:/ `;
   attachmentText += `\`${data.status}\`/ ${data.assignee}\n`;
-  attachmentText += `fixVer: ${data.fixVersion.join()}`;
+  attachmentText += `fixVer: ${data.fixVersion.join()}/`;
+  attachmentText += `Build: \`${data.buildNumber}\``;
   attachment = {
     'fallback': `[${data.key}] ${data.summary}`,
     'color': data.issueColor,
@@ -137,7 +138,7 @@ const makeChangelogAttachment = function (data, cb) {
         'value': `:${data.fields.priority.name}:`,
         'short': true
       }, {
-        'title': 'Severity',
+        'title': 'severity',
         'value': cf === undefined ? 'None' : cf.value,
         'short': true
       }, {

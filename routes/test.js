@@ -86,7 +86,7 @@ router.get('/jira-get-issue/:issueKey', (req, res, next) => {
       summary: data.fields.summary,
       description: data.fields.description,
       priority: data.fields.priority.name,
-      Severity: data.fields.customfield_10503,
+      severity: data.fields.customfield_10503,
       status: data.fields.status.name,
       fixVersion: data.fields.fixVersions.map(v => v.name).join(),
       created: data.fields.created,
