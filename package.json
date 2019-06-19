@@ -18,7 +18,7 @@
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "i": "^0.3.6",
-    "jira-connector": "2.9.0",
+    "jira-connector": "^2.14.0",
     "lowdb": "^1.0.0",
     "moment": "^2.22.2",
     "moment-timezone": "^0.5.21",
