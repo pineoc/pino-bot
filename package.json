@@ -26,7 +26,7 @@
     "node-cron": "^2.0.3",
     "node-svn-ultimate": "^1.1.0",
     "npm": "^6.14.6",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "svn-spawn": "^0.1.5"
   },
   "devDependencies": {
