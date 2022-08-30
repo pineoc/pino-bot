@@ -21,7 +21,7 @@
     "jira-connector": "^2.14.0",
     "lowdb": "^1.0.0",
     "moment": "^2.22.2",
-    "moment-timezone": "^0.5.21",
+    "moment-timezone": "^0.5.35",
     "morgan": "^1.9.1",
     "node-cron": "^2.0.3",
     "node-svn-ultimate": "^1.1.0",
